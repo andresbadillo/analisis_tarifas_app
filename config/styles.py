@@ -35,5 +35,9 @@ CUSTOM_CSS = """
     .st-emotion-cache-1cypcdb small {
         color: #e6e6e6;
     }
+    /* Forzar color blanco en todo el texto del sidebar */
+    section[data-testid="stSidebar"] * {
+        color: #fff !important;
+    }
     </style>
 """ 
