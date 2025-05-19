@@ -37,7 +37,7 @@ CUSTOM_CSS = """
     }
     /* Forzar color blanco en todo el texto del sidebar */
     section[data-testid="stSidebar"] * {
-        color: #ff4 !important;
+        color: #e6e6e6 !important;
     }
     </style>
 """ 
