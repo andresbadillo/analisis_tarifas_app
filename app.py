@@ -92,7 +92,7 @@ if not st.session_state['archivo_cargado']:
                     if df_procesado is not None:
                         st.session_state['df_tarifas'] = df_procesado
                         st.session_state['archivo_cargado'] = True
-                        st.experimental_rerun()
+                        st.rerun()
 else:
     # Mostrar resumen de datos del archivo cargado
     df_procesado = st.session_state['df_tarifas']
@@ -180,7 +180,7 @@ if st.session_state['archivo_cargado']:
                             'comercializador': comercializador,
                             'nt': nt
                         }
-                        st.experimental_rerun()
+                        st.rerun()
     else:
         # Mostrar parámetros de la comparación
         st.subheader("Parámetros de la comparación:")
@@ -226,7 +226,7 @@ if st.session_state['archivo_cargado']:
             with col2:
                 if st.button('🔄 Nueva Comparación', key='nueva_comparacion'):
                     reset_comparacion()
-                    st.experimental_rerun()
+                    st.rerun()
 
 else:
     st.info("ℹ️ Por favor, primero carga el archivo de tarifas para realizar la comparación.")
