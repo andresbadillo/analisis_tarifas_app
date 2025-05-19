@@ -41,7 +41,7 @@ with st.sidebar:
     # Logo de la compañía centrado
     col1, col2, col3 = st.columns([0.5,4,0.5])
     with col2:
-        st.image("assets/path1310.png", use_column_width=True)
+        st.image("assets/path1310.png", use_container_width=True)
     
     st.markdown("---")
     
