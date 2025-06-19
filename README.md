@@ -26,11 +26,16 @@ cd analisis_tarifas_app
 2. Crear un entorno virtual (opcional pero recomendado):
 ```bash
 python -m venv venv
-source venv/bin/activate  # En Linux/Mac
+# source venv/bin/activate  # En Linux/Mac
 venv\Scripts\activate     # En Windows
 ```
 
-3. Instalar dependencias:
+3. Actualizar pip, setuptools y wheel:
+```bash
+pip install --upgrade pip setuptools wheel
+```
+
+4. Instalar dependencias:
 ```bash
 pip install -r requirements.txt
 ```
@@ -66,7 +71,7 @@ analisis_tarifas_app/
 El archivo Excel (.xlsm) debe contener:
 - Hoja llamada "Hojadedatos"
 - Tabla llamada "TablaDatos"
-- Columnas requeridas: MERCADO, AÑO, FECHA, COMERCIALIZADOR, NT, G, C, CU
+- Columnas requeridas: MERCADO, FECHA, COMERCIALIZADOR, NT, G, C, CU
 
 ## 👥 Autores
 

@@ -59,20 +59,19 @@ def procesar_df_tarifas(df: pd.DataFrame) -> Optional[pd.DataFrame]:
         DataFrame procesado o None si hay error.
     """
     try:
-        columnas_necesarias = {'MERCADO', 'AÑO', 'FECHA', 'COMERCIALIZADOR', 'NT', 'G', 'C', 'CU'}
+        columnas_necesarias = {'MERCADO', 'FECHA', 'COMERCIALIZADOR', 'NT', 'G', 'C', 'CU'}
         if not columnas_necesarias.issubset(df.columns):
             st.error("❌ La tabla no contiene todas las columnas necesarias.")
-            st.info("ℹ️ Las columnas requeridas son: MERCADO, AÑO, FECHA, COMERCIALIZADOR, NT, G, C, CU")
+            st.info("ℹ️ Las columnas requeridas son: MERCADO, FECHA, COMERCIALIZADOR, NT, G, C, CU")
             return None
 
         df['FECHA'] = pd.to_datetime(df['FECHA'])
-        df['AÑO'] = pd.to_numeric(df['AÑO'], errors='coerce')
 
         columnas_numericas = ['G', 'C', 'CU']
         for col in columnas_numericas:
             df[col] = pd.to_numeric(df[col], errors='coerce')
 
-        columnas_orden = ['AÑO', 'FECHA', 'MERCADO', 'COMERCIALIZADOR', 'NT', 'G', 'C', 'CU']
+        columnas_orden = ['FECHA', 'MERCADO', 'COMERCIALIZADOR', 'NT', 'G', 'C', 'CU']
         df = df[columnas_orden]
         df['FECHA'] = df['FECHA'].dt.strftime('%Y-%m')
 
