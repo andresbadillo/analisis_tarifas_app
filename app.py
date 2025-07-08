@@ -8,6 +8,8 @@ import io
 
 from config.constants import PAGE_CONFIG, INITIAL_SESSION_STATE
 from config.styles import CUSTOM_CSS
+from auth.azure_auth import AzureAuth
+from auth.sharepoint import SharePointClient
 from utils.data_processing import cargar_tabla_desde_excel, procesar_df_tarifas
 from utils.comparison import comparar_cu
 from utils.visualization import crear_grafico_comparacion
@@ -36,7 +38,16 @@ def reset_comparacion():
     st.session_state['parametros_comparacion'] = {}
     st.session_state['mensajes_analisis'] = []
 
-# Sidebar con información
+# --- AUTENTICACIÓN AZURE AD ---
+azure_auth = AzureAuth()
+token = azure_auth.get_token()
+
+if not token:
+    # Solo muestra el botón de login, sin error
+    token = azure_auth.authenticate()
+    st.stop()
+
+# --- SIDEBAR CON INFORMACIÓN ---
 with st.sidebar:
     # Logo de la compañía centrado
     col1, col2, col3 = st.columns([0.5,4,0.5])
@@ -54,12 +65,13 @@ with st.sidebar:
     
     st.markdown("""
     ### Instrucciones
-    1. Cargue su archivo Excel de tarifas (.xlsm) y espere a que se procese
-    2. Seleccione el mercado a analizar
-    3. Elija el comercializador para comparar
-    4. Seleccione el nivel de tensión
-    5. Ejecute la comparación
-    6. Visualice los resultados y exporte si lo desea
+    1. El archivo se descarga automáticamente desde SharePoint
+    2. Espera a que el archivo cargue y haga un análisis previo de los datos
+    3. Seleccione el mercado a analizar
+    4. Seleccione el comercializador para comparar
+    5. Seleccione el nivel de tensión
+    6. Ejecute la comparación
+    7. Visualice los resultados y exporte si lo desea
     
     ### Notas
     - La ejecución entre paso y paso puede tardar algunos minutos
@@ -75,15 +87,19 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# Sección 1: Carga de Archivo
+# --- SECCIÓN 1: CARGA DE ARCHIVO ---
 st.header("1️⃣ Carga de Archivo")
 
 if not st.session_state['archivo_cargado']:
-    uploaded_file = st.file_uploader("📂 Cargar archivo de tarifas (.xlsm)", type=['xlsm'])
-
-    if uploaded_file is not None:
-        with st.spinner('Cargando archivo y procesando datos...'):
-            df = cargar_tabla_desde_excel(uploaded_file)
+    # Inicializar cliente de SharePoint
+    sharepoint_client = SharePointClient(token)
+    
+    with st.spinner('Descargando archivo desde SharePoint y procesando datos...'):
+        archivo_bytes = sharepoint_client.download_file()
+        
+        if archivo_bytes:
+            archivo_stream = io.BytesIO(archivo_bytes)
+            df = cargar_tabla_desde_excel(archivo_stream)
             
             if df is not None:
                 with st.spinner('Aplicando transformaciones a los datos...'):
@@ -93,6 +109,9 @@ if not st.session_state['archivo_cargado']:
                         st.session_state['df_tarifas'] = df_procesado
                         st.session_state['archivo_cargado'] = True
                         st.rerun()
+        else:
+            st.error("No se pudo descargar el archivo. Verifica la conexión y permisos.")
+            st.stop()
 else:
     # Mostrar resumen de datos del archivo cargado
     df_procesado = st.session_state['df_tarifas']
@@ -115,7 +134,7 @@ else:
         hide_index=True
     )
 
-# Sección 2: Comparación de Tarifas
+# --- SECCIÓN 2: COMPARACIÓN DE TARIFAS ---
 if st.session_state['archivo_cargado']:
     st.markdown("---")
     st.header("2️⃣ Comparación de Tarifas")
