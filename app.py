@@ -65,16 +65,14 @@ with st.sidebar:
     
     st.markdown("""
     ### Instrucciones
-    1. El archivo se descarga automáticamente desde SharePoint
-    2. Espera a que el archivo cargue y haga un análisis previo de los datos
-    3. Seleccione el mercado a analizar
-    4. Seleccione el comercializador para comparar
-    5. Seleccione el nivel de tensión
-    6. Ejecute la comparación
-    7. Visualice los resultados y exporte si lo desea
+    1. Espere a que el archivo cargue y haga un análisis previo de los datos
+    2. Seleccione el mercado a analizar
+    3. Seleccione el comercializador para comparar
+    4. Seleccione el nivel de tensión
+    5. Ejecute la comparación
+    6. Visualice los resultados y exporte en excel si lo desea
     
     ### Notas
-    - La ejecución entre paso y paso puede tardar algunos minutos
     - El archivo exportado contiene los periodos resultantes de la comparación
     """)
     
@@ -83,7 +81,7 @@ with st.sidebar:
     # Información de versión y copyright
     st.markdown("""
     <div style='position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px;'>
-    <small>v1.0.0 | © 2025 Ruitoque Energía</small>
+    <small>v1.1.0 | © 2025 Ruitoque Energía</small>
     </div>
     """, unsafe_allow_html=True)
 
