@@ -44,7 +44,7 @@ class AzureAuth:
             col1, col2, col3 = st.columns([2, 2, 2])
             with col2:
                 result = self.oauth2.authorize_button(
-                    name="Iniciar sesión con tus credenciales de Ruitoque",
+                    name="Inicia sesión con tus credenciales de Ruitoque",
                     redirect_uri=self.redirect_uri,
                     scope=self.scope,
                     key="azure"

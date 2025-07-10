@@ -23,8 +23,14 @@ st.set_page_config(**PAGE_CONFIG)
 # Aplicar estilos CSS personalizados
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
+# Logo principal
+col1, col2, col3 = st.columns([4, 2, 4])   # columnas laterales más angostas
+with col2:
+    st.image("assets/Logo1.png", width=200, use_container_width=True)
+st.markdown("<br><br>", unsafe_allow_html=True)
+
 # Título principal
-st.markdown("<h1 class='titulo-principal'>📊 Análisis de Tarifas de Energía</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='titulo-principal'>Análisis de Tarifas de Energía</h1>", unsafe_allow_html=True)
 
 # Inicializar el estado de la sesión
 for key, value in INITIAL_SESSION_STATE.items():
