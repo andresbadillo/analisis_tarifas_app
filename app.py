@@ -76,9 +76,8 @@ with st.sidebar:
     st.markdown("""
     ### Instrucciones
     1. Espere a que el archivo cargue y haga un análisis previo de los datos
-    2. Seleccione el mercado a analizar
-    3. Seleccione el comercializador para comparar
-    4. Seleccione el nivel de tensión
+    2. Seleccione el mercado, comercializador y nivel de tensión a comparar
+    3. Seleccione los periodos inicial y final a comparar
     5. Ejecute la comparación
     6. Visualice los resultados y exporte en excel si lo desea
     
