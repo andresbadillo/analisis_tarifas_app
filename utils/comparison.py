@@ -9,17 +9,19 @@ def comparar_cu(
     mercado_seleccionado: str,
     comercializador_seleccionado: str,
     nt_seleccionado: str,
-    max_periodos: int = 12
+    periodo_inicio: str = None,
+    periodo_fin: str = None
 ) -> Optional[pd.DataFrame]:
     """
-    Compara el CU de RUITOQUE frente a otro comercializador.
+    Compara el CU de RUITOQUE frente a otro comercializador en un rango de periodos específico.
     
     Args:
         df_tarifas: DataFrame con los datos de tarifas.
         mercado_seleccionado: Mercado a analizar.
         comercializador_seleccionado: Comercializador para comparar.
         nt_seleccionado: Nivel de tensión.
-        max_periodos: Máximo número de periodos a analizar.
+        periodo_inicio: Periodo de inicio para la comparación (formato: YYYY-MM).
+        periodo_fin: Periodo final para la comparación (formato: YYYY-MM).
     
     Returns:
         DataFrame con la comparación o None si hay error.
@@ -49,15 +51,31 @@ def comparar_cu(
             suffixes=('_RTQ', f'_{suf}')
         ).sort_values('FECHA', ascending=False).reset_index(drop=True)
 
+        # Filtrar por rango de periodos si se especifica
+        if periodo_inicio and periodo_fin:
+            df_cmp = df_cmp[
+                (df_cmp['FECHA'] >= periodo_inicio) & 
+                (df_cmp['FECHA'] <= periodo_fin)
+            ].sort_values('FECHA', ascending=False).reset_index(drop=True)
+            
+            if df_cmp.empty:
+                mensajes_analisis.append(f"⚠️ No hay datos en el rango especificado ({periodo_inicio} a {periodo_fin})")
+                return None
+            
+            mensajes_analisis.append(
+                f"📅 Analizando periodos desde {periodo_inicio} hasta {periodo_fin} ({len(df_cmp)} periodos disponibles)"
+            )
+        else:
+            mensajes_analisis.append(
+                f"📅 Analizando todos los periodos disponibles ({len(df_cmp)} periodos)"
+            )
+
         acumulados = []
         mensajes_analisis.append(
-            f"📅 Iniciando recorrido desde {df_cmp['FECHA'].iloc[0]} hacia atrás (hasta {max_periodos} periodos)"
+            f"🔄 Iniciando análisis desde {df_cmp['FECHA'].iloc[0]} hacia atrás"
         )
 
         for idx, row in df_cmp.iterrows():
-            if idx >= max_periodos:
-                break
-                
             temp = pd.DataFrame(acumulados + [row])
             prom_rtq = temp['CU_RTQ'].mean()
             prom_sel = temp[f'CU_{suf}'].mean()

@@ -43,6 +43,11 @@ def reset_comparacion():
     st.session_state['df_resultado'] = None
     st.session_state['parametros_comparacion'] = {}
     st.session_state['mensajes_analisis'] = []
+    # Limpiar selectores de periodos
+    if 'periodo_inicio_selector' in st.session_state:
+        del st.session_state['periodo_inicio_selector']
+    if 'periodo_fin_selector' in st.session_state:
+        del st.session_state['periodo_fin_selector']
 
 # --- AUTENTICACIÓN AZURE AD ---
 azure_auth = AzureAuth()
@@ -65,8 +70,7 @@ with st.sidebar:
     st.header("ℹ️ Información")
     st.markdown("""
     Compara el CU de RUITOQUE frente a otro comercializador 
-    recorriendo hasta 12 periodos desde el último periodo válido 
-    hacia atrás.
+    en un rango de periodos específico que puedes seleccionar.
     """)
     
     st.markdown("""
@@ -87,7 +91,7 @@ with st.sidebar:
     # Información de versión y copyright
     st.markdown("""
     <div style='position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px;'>
-    <small>v1.1.0 | © 2025 Ruitoque Energía</small>
+    <small>v1.2.0 | © 2025 Ruitoque Energía</small>
     </div>
     """, unsafe_allow_html=True)
 
@@ -191,9 +195,62 @@ if st.session_state['archivo_cargado']:
                 nt = None
         
         if mercado and comercializador and nt:
+            # Selectores de periodos
+            st.subheader("📅 Selección de Periodos")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Obtener fechas disponibles para este filtro (orden cronológico)
+                fechas_disponibles = sorted(
+                    df_procesado[
+                        (df_procesado['MERCADO'] == mercado) & 
+                        (df_procesado['COMERCIALIZADOR'] == comercializador) &
+                        (df_procesado['NT'] == nt)
+                    ]['FECHA'].unique()
+                )
+                
+                if fechas_disponibles:
+                    # Buscar el índice por defecto para 2024-01
+                    default_inicio_index = 0
+                    for i, fecha in enumerate(fechas_disponibles):
+                        if fecha >= "2024-01":
+                            default_inicio_index = i
+                            break
+                    
+                    periodo_inicio = st.selectbox(
+                        'Periodo de inicio:',
+                        options=fechas_disponibles,
+                        index=default_inicio_index,
+                        key='periodo_inicio_selector'
+                    )
+                else:
+                    st.error("No hay fechas disponibles para esta selección")
+                    periodo_inicio = None
+            
+            with col2:
+                if fechas_disponibles:
+                    # Mostrar todas las fechas disponibles para el periodo final
+                    periodo_fin = st.selectbox(
+                        'Periodo final:',
+                        options=fechas_disponibles,
+                        index=len(fechas_disponibles)-1,  # Último periodo disponible
+                        key='periodo_fin_selector'
+                    )
+                else:
+                    st.info("No hay fechas disponibles")
+                    periodo_fin = None
+            
+            # Información sobre el rango seleccionado
+            if periodo_inicio and periodo_fin:
+                if periodo_inicio > periodo_fin:
+                    st.warning("⚠️ El periodo de inicio debe ser menor o igual al periodo final")
+                else:
+                    st.info(f"📊 Analizando periodos desde {periodo_inicio} hasta {periodo_fin}")
+            
             if st.button('▶️ Ejecutar Comparación', type='primary', key='ejecutar_btn'):
-                with st.spinner('Ejecutando comparación de tarifas...'):
-                    df_resultado = comparar_cu(df_procesado, mercado, comercializador, nt)
+                if periodo_inicio and periodo_fin and periodo_inicio <= periodo_fin:
+                    with st.spinner('Ejecutando comparación de tarifas...'):
+                        df_resultado = comparar_cu(df_procesado, mercado, comercializador, nt, periodo_inicio, periodo_fin)
                     
                     if df_resultado is not None:
                         st.session_state['df_resultado'] = df_resultado
@@ -201,19 +258,23 @@ if st.session_state['archivo_cargado']:
                         st.session_state['parametros_comparacion'] = {
                             'mercado': mercado,
                             'comercializador': comercializador,
-                            'nt': nt
+                            'nt': nt,
+                            'periodo_inicio': periodo_inicio,
+                            'periodo_fin': periodo_fin
                         }
                         st.rerun()
     else:
         # Mostrar parámetros de la comparación
         st.subheader("Parámetros de la comparación:")
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.info(f"🏢 Mercado: {st.session_state['parametros_comparacion']['mercado']}")
         with col2:
             st.info(f"🏪 Comercializador: {st.session_state['parametros_comparacion']['comercializador']}")
         with col3:
             st.info(f"⚡ Nivel de Tensión: {st.session_state['parametros_comparacion']['nt']}")
+        with col4:
+            st.info(f"📅 Periodos: {st.session_state['parametros_comparacion']['periodo_inicio']} - {st.session_state['parametros_comparacion']['periodo_fin']}")
 
         # Mostrar mensajes del análisis
         st.subheader("📊 Análisis Periodo a Periodo")
@@ -235,13 +296,13 @@ if st.session_state['archivo_cargado']:
             with col1:
                 # Botón de descarga
                 output = io.BytesIO()
-                with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                    st.session_state['df_resultado'].to_excel(writer, index=False, sheet_name="Comparacion")
+                st.session_state['df_resultado'].to_excel(output, index=False, sheet_name="Comparacion", engine='openpyxl')
+                output.seek(0)
                 
                 st.download_button(
                     label="📥 Descargar Resultados",
                     data=output.getvalue(),
-                    file_name=f"comparacion_cu_{st.session_state['parametros_comparacion']['mercado']}_{st.session_state['parametros_comparacion']['comercializador']}_{st.session_state['parametros_comparacion']['nt']}.xlsx",
+                    file_name=f"comparacion_cu_{st.session_state['parametros_comparacion']['mercado']}_{st.session_state['parametros_comparacion']['comercializador']}_{st.session_state['parametros_comparacion']['nt']}_{st.session_state['parametros_comparacion']['periodo_inicio']}_{st.session_state['parametros_comparacion']['periodo_fin']}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     key='descargar_btn'
                 )

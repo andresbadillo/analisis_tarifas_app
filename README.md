@@ -1,6 +1,6 @@
 # 📊 Análisis de Tarifas de Energía
 
-Aplicación web para el análisis de tarifas de energía que compara el CU (Costo Unitario) de RUITOQUE frente a otros comercializadores, recorriendo hasta 12 periodos desde el último periodo válido hacia atrás.
+Aplicación web para el análisis de tarifas de energía que compara el CU (Costo Unitario) de RUITOQUE frente a otros comercializadores en un rango de periodos específico seleccionable por el usuario.
 
 ## 🏗️ Estructura del Proyecto
 
@@ -72,8 +72,9 @@ streamlit run test_connection.py
 2. **Descarga Automática**: El archivo se descarga desde SharePoint
 3. **Procesamiento**: Los datos se procesan y transforman
 4. **Selección**: Usuario selecciona Mercado, Comercializador y Nivel de Tensión
-5. **Análisis**: Se ejecuta la comparación CU vs RUITOQUE
-6. **Resultados**: Visualización de gráficos y exportación de datos
+5. **Selección de Periodos**: Usuario define el rango de periodos a analizar (inicio y final)
+6. **Análisis**: Se ejecuta la comparación CU vs RUITOQUE en el rango especificado
+7. **Resultados**: Visualización de gráficos y exportación de datos
 
 ## 🛠️ Características Técnicas
 
@@ -125,7 +126,25 @@ La aplicación está diseñada con una arquitectura modular que separa:
 
 Desarrollado por: [andresbadillo.co](https://www.andresbadillo.co/)
 
+## 📝 Changelog
+
+### v1.2.0 (2025)
+- ✨ **Nueva funcionalidad**: Selección manual de rango de periodos
+- 🔧 **Mejora**: Periodo de inicio por defecto en 2024-01
+- 🔧 **Mejora**: Periodo final por defecto en el último periodo disponible
+- 🔧 **Mejora**: Validación mejorada de rangos de periodos
+- 🐛 **Corrección**: Orden cronológico correcto en selectores de periodos
+- 🐛 **Corrección**: Errores de linter en configuración de página
+- 🐛 **Corrección**: Compatibilidad mejorada con exportación a Excel
+
+### v1.1.0 (2025)
+- 🏗️ **Refactorización**: Arquitectura modular implementada
+- 🔐 **Seguridad**: Autenticación Azure AD integrada
+- 📊 **Funcionalidad**: Comparación automática de CU vs competencia
+- 📈 **Visualización**: Gráficos interactivos con Plotly
+- 📤 **Exportación**: Descarga de resultados en Excel
+
 ---
 
-**Versión**: 1.0.0  
+**Versión**: 1.2.0  
 **Última actualización**: 2025 

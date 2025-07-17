@@ -5,7 +5,8 @@ PAGE_CONFIG = {
     "page_title": "Análisis de Tarifas - Ruitoque",
     "page_icon": "assets/Isotipo.png",
     "layout": "wide",
-    "initial_sidebar_state": "expanded"
+    "initial_sidebar_state": "expanded",
+    "menu_items": None
 }
 
 # Estado inicial de la sesión
