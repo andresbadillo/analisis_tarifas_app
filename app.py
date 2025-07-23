@@ -75,7 +75,7 @@ with st.sidebar:
     
     st.markdown("""
     ### Instrucciones
-    1. Espere a que el archivo cargue y haga un análisis previo de los datos
+    1. Espere a que se cargue archivo y la aplicación realice un análisis previo de los datos
     2. Seleccione el mercado, comercializador y nivel de tensión a comparar
     3. Seleccione los periodos inicial y final a comparar
     5. Ejecute la comparación
@@ -90,7 +90,7 @@ with st.sidebar:
     # Información de versión y copyright
     st.markdown("""
     <div style='position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px;'>
-    <small>v2.1.0 | © 2025 Ruitoque Energía</small>
+    <small>v2.1.1 | © 2025 Ruitoque Energía</small>
     </div>
     """, unsafe_allow_html=True)
 
@@ -209,15 +209,16 @@ if st.session_state['archivo_cargado']:
                 )
                 
                 if fechas_disponibles:
-                    # Buscar el índice por defecto para 2024-01
-                    default_inicio_index = 0
-                    for i, fecha in enumerate(fechas_disponibles):
-                        if fecha >= "2024-01":
-                            default_inicio_index = i
-                            break
+                    # Calcular el índice por defecto para los últimos 12 meses
+                    # Si hay menos de 12 periodos, usar el primero disponible
+                    if len(fechas_disponibles) >= 12:
+                        # Para obtener exactamente 12 periodos: último periodo - 11 = primer periodo de los últimos 12
+                        default_inicio_index = len(fechas_disponibles) - 12
+                    else:
+                        default_inicio_index = 0
                     
                     periodo_inicio = st.selectbox(
-                        'Periodo de inicio:',
+                        'Periodo inicial:',
                         options=fechas_disponibles,
                         index=default_inicio_index,
                         key='periodo_inicio_selector'

@@ -43,7 +43,7 @@ def crear_grafico_comparacion(df_resultado: pd.DataFrame) -> Optional[go.Figure]
         # Actualizar layout
         fig.update_layout(
             title=f'Comparación de CU entre RUITOQUE y {comercializador}',
-            xaxis_title='Fecha',
+            xaxis_title='Periodos',
             yaxis_title='Costo Unitario (CU)',
             hovermode='x unified',
             showlegend=True,

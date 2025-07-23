@@ -69,5 +69,23 @@
 
 ---
 
+## v2.1.1 (Julio 2025)
+
+### 🔧 Mejoras en Experiencia de Usuario
+- **Periodo Inicial Inteligente**: El periodo inicial por defecto ahora se establece automáticamente en los últimos 12 meses disponibles
+- **Cálculo Preciso**: Garantiza exactamente 12 periodos de análisis, no más ni menos
+- **Flexibilidad**: Si hay menos de 12 periodos disponibles, usa todos los periodos existentes
+
+### 📝 Mejoras en Interfaz
+- **Texto Más Claro**: Cambio de "Periodo de inicio" a "Periodo inicial" para mayor claridad
+- **Instrucciones Mejoradas**: Texto más descriptivo en las instrucciones de uso
+
+### 🎯 Beneficios
+- **Análisis Más Relevante**: Siempre analiza los datos más recientes disponibles
+- **Consistencia**: Mantiene el periodo final como el más reciente
+- **Eficiencia**: Reduce la necesidad de ajuste manual de periodos por parte del usuario
+
+---
+
 **Desarrollado por**: [andresbadillo.co](https://www.andresbadillo.co/)  
 **Mantenido por**: Equipo de Desarrollo Ruitoque Energía 

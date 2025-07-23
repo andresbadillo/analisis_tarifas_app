@@ -63,7 +63,7 @@ def comparar_cu(
                 return None
             
             mensajes_analisis.append(
-                f"📅 Analizando periodos desde {periodo_inicio} hasta {periodo_fin} ({len(df_cmp)} periodos disponibles)"
+                f"📅 Analizando periodos desde {periodo_inicio} hasta {periodo_fin} ({len(df_cmp)} periodos selecionados)"
             )
         else:
             mensajes_analisis.append(
