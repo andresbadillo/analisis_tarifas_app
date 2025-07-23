@@ -1,30 +1,22 @@
 # 📋 Historial de Versiones
 
-## v1.2.0 (Julio 2025)
+## v1.0.0 (Mayo 2024)
 
-### ✨ Nuevas Funcionalidades
-- **Selección Manual de Periodos**: Los usuarios ahora pueden seleccionar manualmente el rango de periodos a analizar
-- **Valores por Defecto Inteligentes**: Periodo de inicio se establece automáticamente en 2024-01 y periodo final en el último disponible
+### 🎯 Lanzamiento Inicial
+- **Concepto Base**: Aplicación para análisis de tarifas de energía
+- **Funcionalidad Core**: Comparación de CU entre comercializadores
+- **Interfaz Básica**: Interfaz web funcional con Streamlit
+- **Procesamiento de Datos**: Carga y procesamiento de archivos Excel
 
-### 🔧 Mejoras
-- **Validación Mejorada**: Validación robusta de rangos de periodos con mensajes informativos
-- **Orden Cronológico**: Los selectores de periodos muestran las fechas en orden cronológico correcto
-- **Interfaz Mejorada**: Información clara sobre el rango de periodos seleccionado
-- **Exportación Mejorada**: Nombres de archivo incluyen el rango de periodos analizado
-
-### 🐛 Correcciones
-- **Errores de Linter**: Corregidos errores de tipos en configuración de página
-- **Exportación Excel**: Mejorada compatibilidad con versiones recientes de pandas
-- **Lógica de Periodos**: Corregido el orden cronológico en toda la aplicación
-
-### 📊 Impacto
-- Mayor flexibilidad para análisis de periodos específicos
-- Mejor experiencia de usuario con valores por defecto sensatos
-- Código más robusto y mantenible
+### 📋 Características Iniciales
+- Carga de archivos de tarifas
+- Selección de parámetros de comparación
+- Análisis básico de periodos
+- Exportación de resultados
 
 ---
 
-## v1.1.0 (Junio 2025)
+## v2.0.0 (Junio 2025)
 
 ### 🏗️ Refactorización Mayor
 - **Arquitectura Modular**: Reestructuración completa del código en módulos especializados
@@ -53,57 +45,27 @@
 
 ---
 
-## v1.0.0 (Mayo 2024)
+## v2.1.0 (Julio 2025)
 
-### 🎯 Lanzamiento Inicial
-- **Concepto Base**: Aplicación para análisis de tarifas de energía
-- **Funcionalidad Core**: Comparación de CU entre comercializadores
-- **Interfaz Básica**: Interfaz web funcional con Streamlit
-- **Procesamiento de Datos**: Carga y procesamiento de archivos Excel
+### ✨ Nuevas Funcionalidades
+- **Selección Manual de Periodos**: Los usuarios ahora pueden seleccionar manualmente el rango de periodos a analizar
+- **Valores por Defecto Inteligentes**: Periodo de inicio se establece automáticamente en 2024-01 y periodo final en el último disponible
 
-### 📋 Características Iniciales
-- Carga de archivos de tarifas
-- Selección de parámetros de comparación
-- Análisis básico de periodos
-- Exportación de resultados
+### 🔧 Mejoras
+- **Validación Mejorada**: Validación robusta de rangos de periodos con mensajes informativos
+- **Orden Cronológico**: Los selectores de periodos muestran las fechas en orden cronológico correcto
+- **Interfaz Mejorada**: Información clara sobre el rango de periodos seleccionado
+- **Exportación Mejorada**: Nombres de archivo incluyen el rango de periodos analizado
 
----
+### 🐛 Correcciones
+- **Errores de Linter**: Corregidos errores de tipos en configuración de página
+- **Exportación Excel**: Mejorada compatibilidad con versiones recientes de pandas
+- **Lógica de Periodos**: Corregido el orden cronológico en toda la aplicación
 
-## 📊 Métricas de Desarrollo
-
-### v1.2.0
-- **Líneas de código**: ~1,200
-- **Módulos**: 8
-- **Funcionalidades principales**: 15+
-- **Tiempo de desarrollo**: 3 semanas
-
-### v1.1.0
-- **Líneas de código**: ~1,000
-- **Módulos**: 6
-- **Funcionalidades principales**: 12
-- **Tiempo de desarrollo**: 4 semanas
-
-### v1.0.0
-- **Líneas de código**: ~500
-- **Módulos**: 1
-- **Funcionalidades principales**: 5
-- **Tiempo de desarrollo**: 2 semanas
-
----
-
-## 🚀 Roadmap Futuro
-
-### v1.3.0 (Próximamente)
-- 📊 **Análisis Estadístico**: Métricas estadísticas avanzadas
-- 📈 **Tendencias**: Análisis de tendencias temporales
-- 🔄 **Comparaciones Múltiples**: Comparación simultánea con múltiples comercializadores
-- 📱 **Responsive Design**: Mejoras en la interfaz móvil
-
-### v2.0.0 (Planificado)
-- 🤖 **Machine Learning**: Predicciones de precios
-- 📊 **Dashboard Avanzado**: Panel de control ejecutivo
-- 🔔 **Alertas**: Notificaciones automáticas
-- 🌐 **API REST**: Interfaz de programación para integraciones
+### 📊 Impacto
+- Mayor flexibilidad para análisis de periodos específicos
+- Mejor experiencia de usuario con valores por defecto sensatos
+- Código más robusto y mantenible
 
 ---
 

@@ -90,7 +90,7 @@ with st.sidebar:
     # Información de versión y copyright
     st.markdown("""
     <div style='position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px;'>
-    <small>v1.2.0 | © 2025 Ruitoque Energía</small>
+    <small>v2.1.0 | © 2025 Ruitoque Energía</small>
     </div>
     """, unsafe_allow_html=True)
 
