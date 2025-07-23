@@ -22,7 +22,11 @@ def crear_grafico_comparacion(df_resultado: pd.DataFrame) -> Optional[go.Figure]
         # Crear figura
         fig = go.Figure()
 
-        # Agregar línea para RUITOQUE
+        # Separar periodos exitosos y de atención
+        periodos_exitosos = df_resultado[df_resultado['ESTADO'] == '✅ Exitoso']
+        periodos_atencion = df_resultado[df_resultado['ESTADO'] == '❌ Atención']
+
+        # Agregar línea para RUITOQUE (todos los periodos)
         fig.add_trace(go.Scatter(
             x=df_resultado['FECHA'],
             y=df_resultado['CU_RTQ'],
@@ -31,7 +35,7 @@ def crear_grafico_comparacion(df_resultado: pd.DataFrame) -> Optional[go.Figure]
             mode='lines+markers'
         ))
 
-        # Agregar línea para el otro comercializador
+        # Agregar línea para el otro comercializador (todos los periodos)
         fig.add_trace(go.Scatter(
             x=df_resultado['FECHA'],
             y=df_resultado[col_com],
@@ -39,6 +43,22 @@ def crear_grafico_comparacion(df_resultado: pd.DataFrame) -> Optional[go.Figure]
             line=dict(color='#FF4B4B', width=2),
             mode='lines+markers'
         ))
+
+        # Agregar marcadores especiales para periodos de atención
+        if not periodos_atencion.empty:
+            fig.add_trace(go.Scatter(
+                x=periodos_atencion['FECHA'],
+                y=periodos_atencion['CU_RTQ'],
+                name='Periodos de Atención',
+                mode='markers',
+                marker=dict(
+                    symbol='x',
+                    size=12,
+                    color='#FF6B35',
+                    line=dict(width=2, color='#FF6B35')
+                ),
+                showlegend=True
+            ))
 
         # Actualizar layout
         fig.update_layout(

@@ -87,5 +87,30 @@
 
 ---
 
+## v2.2.1 (Julio 2025)
+
+### ✨ Nueva Funcionalidad de Análisis Completo
+- **Análisis de Todos los Periodos**: Ahora incluye todos los periodos del rango seleccionado, no solo los exitosos
+- **Transparencia Total**: Muestra tanto periodos donde RUITOQUE es competitivo como aquellos que requieren atención
+- **Mensajes Detallados**: Nuevo formato de mensajes con `"❌ {fecha} -> Atención! (PROM_RTQ > PROM_competidor)"`
+
+### 🔧 Mejoras en Resultados
+- **Columna ESTADO**: Nueva columna que indica `"✅ Exitoso"` o `"❌ Atención"` para cada periodo
+- **Exportación Completa**: Todos los periodos se incluyen en el archivo Excel de resultados
+- **Métricas Completas**: Se calculan las diferencias para todos los periodos analizados
+
+### 📊 Visualización Mejorada
+- **Marcadores Especiales**: Los periodos de atención se marcan con "X" naranja en el gráfico
+- **Leyenda Informativa**: Se muestra una leyenda separada para identificar periodos de atención
+- **Análisis Visual**: Fácil identificación de periodos problemáticos en la gráfica
+
+### 🎯 Beneficios del Análisis Completo
+- **Toma de Decisiones Informada**: Información completa para estrategias de precios
+- **Identificación de Tendencias**: Permite ver patrones de competitividad a lo largo del tiempo
+- **Transparencia**: No oculta periodos desfavorables, proporciona visión completa
+- **Análisis Estratégico**: Facilita la identificación de oportunidades y amenazas
+
+---
+
 **Desarrollado por**: [andresbadillo.co](https://www.andresbadillo.co/)  
 **Mantenido por**: Equipo de Desarrollo Ruitoque Energía 

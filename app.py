@@ -90,7 +90,7 @@ with st.sidebar:
     # Información de versión y copyright
     st.markdown("""
     <div style='position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px;'>
-    <small>v2.1.1 | © 2025 Ruitoque Energía</small>
+    <small>v2.2.1 | © 2025 Ruitoque Energía</small>
     </div>
     """, unsafe_allow_html=True)
 
@@ -245,7 +245,10 @@ if st.session_state['archivo_cargado']:
                 if periodo_inicio > periodo_fin:
                     st.warning("⚠️ El periodo de inicio debe ser menor o igual al periodo final")
                 else:
-                    st.info(f"📊 Analizando periodos desde {periodo_inicio} hasta {periodo_fin}")
+                    # Calcular cuántos periodos hay en el rango seleccionado
+                    fechas_rango = [fecha for fecha in fechas_disponibles if periodo_inicio <= fecha <= periodo_fin]
+                    num_periodos = len(fechas_rango)
+                    st.info(f"📊 Analizando periodos desde {periodo_inicio} hasta {periodo_fin} ({num_periodos} periodos seleccionados)")
             
             if st.button('▶️ Ejecutar Comparación', type='primary', key='ejecutar_btn'):
                 if periodo_inicio and periodo_fin and periodo_inicio <= periodo_fin:

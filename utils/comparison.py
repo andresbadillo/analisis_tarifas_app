@@ -70,42 +70,43 @@ def comparar_cu(
                 f"📅 Analizando todos los periodos disponibles ({len(df_cmp)} periodos)"
             )
 
-        acumulados = []
+        todos_periodos = []
         mensajes_analisis.append(
             f"🔄 Iniciando análisis desde {df_cmp['FECHA'].iloc[0]} hacia atrás"
         )
 
         for idx, row in df_cmp.iterrows():
-            temp = pd.DataFrame(acumulados + [row])
+            temp = pd.DataFrame(todos_periodos + [row])
             prom_rtq = temp['CU_RTQ'].mean()
             prom_sel = temp[f'CU_{suf}'].mean()
 
             if prom_rtq < prom_sel:
-                acumulados.append(row)
+                todos_periodos.append(row)
                 mensajes_analisis.append(
-                    f"✅ {row['FECHA']} -> incluido (per. #{len(acumulados)}: PROM_RTQ={prom_rtq:.2f} < PROM_{suf}={prom_sel:.2f})"
+                    f"✅ {row['FECHA']} -> Exitoso (per. #{len(todos_periodos)}: PROM_RTQ={prom_rtq:.2f} < PROM_{suf}={prom_sel:.2f})"
                 )
             else:
-                if not acumulados:
-                    mensajes_analisis.append(
-                        f"⏳ {row['FECHA']} -> RTQ no es más barato, intentando periodos anteriores..."
-                    )
-                    continue
+                todos_periodos.append(row)
                 mensajes_analisis.append(
-                    f"🛑 {row['FECHA']} -> detenido (PROM_RTQ={prom_rtq:.2f} >= PROM_{suf}={prom_sel:.2f})"
+                    f"❌ {row['FECHA']} -> Atención! (per. #{len(todos_periodos)}: PROM_RTQ={prom_rtq:.2f} > PROM_{suf}={prom_sel:.2f})"
                 )
-                break
 
-        if not acumulados:
-            mensajes_analisis.append("⚠️ Ningún periodo válido donde RTQ tenga CU promedio más bajo")
+        if not todos_periodos:
+            mensajes_analisis.append("⚠️ No hay periodos disponibles para analizar")
             return None
 
-        df_resultado = pd.DataFrame(acumulados).copy()
+        df_resultado = pd.DataFrame(todos_periodos).copy()
         df_resultado['NT'] = nt_seleccionado
 
         prom_rtq_final = df_resultado['CU_RTQ'].mean()
         prom_sel_final = df_resultado[f'CU_{suf}'].mean()
 
+        # Agregar columna de estado (exitoso o no)
+        df_resultado['ESTADO'] = df_resultado.apply(
+            lambda row: '✅ Exitoso' if row['CU_RTQ'] < row[f'CU_{suf}'] else '❌ Atención', 
+            axis=1
+        )
+        
         metrics = {
             'DIF_CU_$': df_resultado[f'CU_{suf}'] - df_resultado['CU_RTQ'],
             'DIF_CU_%': (df_resultado[f'CU_{suf}'] - df_resultado['CU_RTQ']) / df_resultado['CU_RTQ'] * 100,
@@ -123,6 +124,7 @@ def comparar_cu(
         cols = [
             'FECHA',
             'NT',
+            'ESTADO',
             'CU_RTQ',
             f'CU_{suf}',
             'DIF_CU_$',
