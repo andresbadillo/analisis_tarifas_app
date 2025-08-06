@@ -112,5 +112,55 @@
 
 ---
 
+## v2.3.1 (Agosto 2025)
+
+### ✨ Nuevas Funcionalidades Interactivas
+- **Indicadores de Promedio en Tiempo Real**: Nuevos indicadores visuales que muestran promedios del periodo seleccionado
+- **Selector de Rango de Periodos**: Slider interactivo que permite ajustar el rango de análisis dinámicamente
+- **Actualización Automática**: Los indicadores y gráficos se actualizan automáticamente al cambiar el rango
+
+### 📊 Indicadores de Promedio
+- **Promedio RUITOQUE**: Muestra el CU promedio de RUITOQUE en el periodo seleccionado
+- **Promedio Competidor**: Muestra el CU promedio del competidor seleccionado
+- **Diferencia Absoluta**: Calcula la diferencia en pesos y porcentaje entre promedios
+- **Periodos Analizados**: Indica cuántos periodos están incluidos en el análisis actual
+
+### 🎛️ Selector de Rango Mejorado
+- **Slider Categórico**: Muestra directamente los periodos (YYYY-MM) en lugar de números
+- **Selección Intuitiva**: Un solo clic para seleccionar periodo inicial y final
+- **Información Clara**: Muestra el rango seleccionado y número de periodos incluidos
+- **Interfaz Limpia**: Eliminada información redundante para mejor experiencia de usuario
+
+### 📈 Visualización Dinámica
+- **Gráfico Adaptativo**: El gráfico se filtra automáticamente según el rango seleccionado
+- **Indicadores Reactivos**: Los promedios se recalculan en tiempo real
+- **Exportación Filtrada**: El archivo Excel se descarga con solo los datos del rango seleccionado
+
+### 🔧 Mejoras Técnicas
+- **Estado de Sesión Mejorado**: Nuevos parámetros para manejar el slider y datos filtrados
+- **Funciones Utilitarias**: Nuevas funciones para calcular promedios y filtrar resultados
+- **Código Modular**: Mejor organización del código con funciones especializadas
+- **Compatibilidad**: Mantiene compatibilidad con todas las funcionalidades existentes
+
+### 📋 Manual de Usuario Actualizado
+- **Documentación Completa**: Manual actualizado con todas las nuevas funcionalidades
+- **Casos de Uso**: Nuevos ejemplos de uso para análisis dinámico
+- **Instrucciones Detalladas**: Guía paso a paso para usar el slider y indicadores
+- **Consejos Prácticos**: Recomendaciones para ejecutivos de ventas
+
+### 🎯 Beneficios para Ejecutivos de Ventas
+- **Análisis Granular**: Pueden enfocarse en periodos específicos relevantes para el cliente
+- **Presentaciones Dinámicas**: Pueden ajustar el rango durante la presentación
+- **Datos Precisos**: Exportan solo la información relevante para cada caso
+- **Insights Rápidos**: Los promedios se calculan automáticamente para cualquier rango
+
+### 🚀 Experiencia de Usuario Mejorada
+- **Más Intuitivo**: El slider es más natural de usar que los selectores anteriores
+- **Feedback Visual**: Ve inmediatamente el rango seleccionado y los resultados
+- **Eficiencia**: Menos clics para ajustar el rango de análisis
+- **Claridad**: Información contextual sobre el número de periodos
+
+---
+
 **Desarrollado por**: [andresbadillo.co](https://www.andresbadillo.co/)  
 **Mantenido por**: Equipo de Desarrollo Ruitoque Energía 

@@ -2,7 +2,7 @@
 
 # Configuración de la página
 PAGE_CONFIG = {
-    "page_title": "Análisis de Tarifas - Ruitoque",
+    "page_title": "Análisis de Tarifas - Ruitoque v2.3.1",
     "page_icon": "assets/Isotipo.png",
     "layout": "wide",
     "initial_sidebar_state": "expanded",

@@ -277,8 +277,8 @@ Para analizar otro escenario:
 
 ### Para Problemas Técnicos
 - **Desarrollador**: [andresbadillo.co](https://www.andresbadillo.co/)
-- **Versión**: 2.2.1
-- **Última actualización**: 082025
+- **Versión**: 2.3.1
+- **Última actualización**: Agosto 2025
 
 ### Para Consultas Comerciales
 - Contactar al analista de ventas
