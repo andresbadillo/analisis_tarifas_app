@@ -11,7 +11,7 @@ from config.styles import CUSTOM_CSS
 from auth.azure_auth import AzureAuth
 from auth.sharepoint import SharePointClient
 from utils.data_processing import cargar_tabla_desde_excel, procesar_df_tarifas
-from utils.comparison import comparar_cu
+from utils.comparison import comparar_cu, calcular_promedios_periodo, filtrar_resultados_por_periodo
 from utils.visualization import crear_grafico_comparacion
 
 # Ignorar advertencias
@@ -41,8 +41,11 @@ def reset_comparacion():
     """Reinicia el estado de la comparación."""
     st.session_state['mostrar_resultados'] = False
     st.session_state['df_resultado'] = None
+    st.session_state['df_resultado_filtrado'] = None
     st.session_state['parametros_comparacion'] = {}
     st.session_state['mensajes_analisis'] = []
+    st.session_state['slider_periodo_inicio'] = None
+    st.session_state['slider_periodo_fin'] = None
     # Limpiar selectores de periodos
     if 'periodo_inicio_selector' in st.session_state:
         del st.session_state['periodo_inicio_selector']
@@ -289,25 +292,118 @@ if st.session_state['archivo_cargado']:
             st.subheader("📈 Resultados Detallados")
             st.dataframe(st.session_state['df_resultado'])
             
-            # Crear y mostrar gráfico
-            fig = crear_grafico_comparacion(st.session_state['df_resultado'])
+            # Inicializar valores del slider si no existen
+            if st.session_state['slider_periodo_inicio'] is None:
+                st.session_state['slider_periodo_inicio'] = st.session_state['parametros_comparacion']['periodo_inicio']
+            if st.session_state['slider_periodo_fin'] is None:
+                st.session_state['slider_periodo_fin'] = st.session_state['parametros_comparacion']['periodo_fin']
+            
+            # Obtener fechas disponibles para el slider
+            fechas_disponibles = sorted(st.session_state['df_resultado']['FECHA'].unique())
+            
+            # Slider para seleccionar rango de periodos
+            st.subheader("🎛️ Ajustar Rango de Periodos")
+            
+            # Slider de rango con periodos como opciones
+            slider_range = st.select_slider(
+                'Seleccionar rango de periodos:',
+                options=fechas_disponibles,
+                value=(st.session_state['slider_periodo_inicio'], st.session_state['slider_periodo_fin']),
+                key='periodo_slider'
+            )
+            
+            # Extraer fechas del slider
+            slider_inicio = slider_range[0]
+            slider_fin = slider_range[1]
+            
+            # Mostrar información del rango seleccionado
+            st.caption(f"📅 Periodo seleccionado: {slider_inicio} a {slider_fin} ({len([f for f in fechas_disponibles if slider_inicio <= f <= slider_fin])} periodos)")
+            
+            # Actualizar valores del slider
+            st.session_state['slider_periodo_inicio'] = slider_inicio
+            st.session_state['slider_periodo_fin'] = slider_fin
+            
+            # Calcular promedios para el rango seleccionado
+            promedios = calcular_promedios_periodo(
+                st.session_state['df_resultado'], 
+                st.session_state['slider_periodo_inicio'], 
+                st.session_state['slider_periodo_fin']
+            )
+            
+            # Mostrar indicadores de promedio
+            st.subheader("📊 Promedios del Periodo Seleccionado")
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric(
+                    f"Promedio RUITOQUE", 
+                    f"${promedios['promedio_rtq']:,.2f}",
+                    help="Promedio del Costo Unitario de RUITOQUE en el periodo seleccionado"
+                )
+            
+            with col2:
+                st.metric(
+                    f"Promedio {promedios['comercializador']}", 
+                    f"${promedios['promedio_competidor']:,.2f}",
+                    help=f"Promedio del Costo Unitario de {promedios['comercializador']} en el periodo seleccionado"
+                )
+            
+            with col3:
+                diferencia_color = "normal" if promedios['diferencia_absoluta'] > 0 else "inverse"
+                st.metric(
+                    "Diferencia Absoluta", 
+                    f"${promedios['diferencia_absoluta']:,.2f}",
+                    delta=f"{promedios['diferencia_porcentual']:+.2f}%",
+                    delta_color=diferencia_color,
+                    help="Diferencia absoluta y porcentual entre promedios (positivo = RUITOQUE más competitivo)"
+                )
+            
+            with col4:
+                st.metric(
+                    "Periodos Analizados", 
+                    f"{promedios['periodos_analizados']}",
+                    help="Número de periodos incluidos en el análisis actual"
+                )
+            
+            # Filtrar datos para el gráfico
+            df_filtrado = filtrar_resultados_por_periodo(
+                st.session_state['df_resultado'],
+                st.session_state['slider_periodo_inicio'],
+                st.session_state['slider_periodo_fin']
+            )
+            st.session_state['df_resultado_filtrado'] = df_filtrado
+            
+            # Crear y mostrar gráfico con datos filtrados
+            fig = crear_grafico_comparacion(
+                st.session_state['df_resultado'],
+                st.session_state['slider_periodo_inicio'],
+                st.session_state['slider_periodo_fin']
+            )
             if fig:
                 st.plotly_chart(fig, use_container_width=True)
             
             # Botones de acción
             col1, col2 = st.columns(2)
             with col1:
-                # Botón de descarga
+                # Botón de descarga con datos filtrados
                 output = io.BytesIO()
-                st.session_state['df_resultado'].to_excel(output, index=False, sheet_name="Comparacion", engine='openpyxl')
+                
+                # Usar datos filtrados si están disponibles, sino usar todos los datos
+                df_para_exportar = st.session_state['df_resultado_filtrado'] if st.session_state['df_resultado_filtrado'] is not None else st.session_state['df_resultado']
+                
+                df_para_exportar.to_excel(output, index=False, sheet_name="Comparacion", engine='openpyxl')
                 output.seek(0)
+                
+                # Generar nombre de archivo con información del rango seleccionado
+                nombre_archivo = f"comparacion_cu_{st.session_state['parametros_comparacion']['mercado']}_{st.session_state['parametros_comparacion']['comercializador']}_{st.session_state['parametros_comparacion']['nt']}_{st.session_state['slider_periodo_inicio']}_{st.session_state['slider_periodo_fin']}.xlsx"
                 
                 st.download_button(
                     label="📥 Descargar Resultados",
                     data=output.getvalue(),
-                    file_name=f"comparacion_cu_{st.session_state['parametros_comparacion']['mercado']}_{st.session_state['parametros_comparacion']['comercializador']}_{st.session_state['parametros_comparacion']['nt']}_{st.session_state['parametros_comparacion']['periodo_inicio']}_{st.session_state['parametros_comparacion']['periodo_fin']}.xlsx",
+                    file_name=nombre_archivo,
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    key='descargar_btn'
+                    key='descargar_btn',
+                    help=f"Descarga los resultados del análisis para el periodo {st.session_state['slider_periodo_inicio']} a {st.session_state['slider_periodo_fin']}"
                 )
             
             with col2:

@@ -152,4 +152,92 @@ def comparar_cu(
 
     except Exception as e:
         st.error(f"❌ Error en la comparación: {str(e)}")
-        return None 
+        return None
+
+
+def calcular_promedios_periodo(df_resultado: pd.DataFrame, periodo_inicio: str = None, periodo_fin: str = None) -> dict:
+    """
+    Calcula los promedios de CU para RUITOQUE y el competidor en un rango de periodos específico.
+    
+    Args:
+        df_resultado: DataFrame con los resultados de la comparación
+        periodo_inicio: Periodo de inicio para filtrar (formato: YYYY-MM)
+        periodo_fin: Periodo final para filtrar (formato: YYYY-MM)
+    
+    Returns:
+        Diccionario con los promedios calculados
+    """
+    try:
+        # Filtrar por rango de periodos si se especifica
+        df_filtrado = df_resultado.copy()
+        if periodo_inicio and periodo_fin:
+            df_filtrado = df_filtrado[
+                (df_filtrado['FECHA'] >= periodo_inicio) & 
+                (df_filtrado['FECHA'] <= periodo_fin)
+            ]
+        
+        if df_filtrado.empty:
+            return {
+                'promedio_rtq': 0,
+                'promedio_competidor': 0,
+                'diferencia_absoluta': 0,
+                'diferencia_porcentual': 0,
+                'periodos_analizados': 0
+            }
+        
+        # Identificar la columna del competidor
+        col_competidor = [col for col in df_filtrado.columns if col.startswith('CU_') and col != 'CU_RTQ'][0]
+        comercializador = col_competidor.replace('CU_', '')
+        
+        # Calcular promedios
+        promedio_rtq = df_filtrado['CU_RTQ'].mean()
+        promedio_competidor = df_filtrado[col_competidor].mean()
+        diferencia_absoluta = promedio_competidor - promedio_rtq
+        diferencia_porcentual = (diferencia_absoluta / promedio_rtq * 100) if promedio_rtq > 0 else 0
+        
+        return {
+            'promedio_rtq': round(promedio_rtq, 2),
+            'promedio_competidor': round(promedio_competidor, 2),
+            'diferencia_absoluta': round(diferencia_absoluta, 2),
+            'diferencia_porcentual': round(diferencia_porcentual, 2),
+            'periodos_analizados': len(df_filtrado),
+            'comercializador': comercializador
+        }
+        
+    except Exception as e:
+        print(f"Error al calcular promedios: {str(e)}")
+        return {
+            'promedio_rtq': 0,
+            'promedio_competidor': 0,
+            'diferencia_absoluta': 0,
+            'diferencia_porcentual': 0,
+            'periodos_analizados': 0
+        }
+
+
+def filtrar_resultados_por_periodo(df_resultado: pd.DataFrame, periodo_inicio: str = None, periodo_fin: str = None) -> pd.DataFrame:
+    """
+    Filtra los resultados de comparación por un rango de periodos específico.
+    
+    Args:
+        df_resultado: DataFrame con los resultados de la comparación
+        periodo_inicio: Periodo de inicio para filtrar (formato: YYYY-MM)
+        periodo_fin: Periodo final para filtrar (formato: YYYY-MM)
+    
+    Returns:
+        DataFrame filtrado por el rango de periodos
+    """
+    try:
+        df_filtrado = df_resultado.copy()
+        
+        if periodo_inicio and periodo_fin:
+            df_filtrado = df_filtrado[
+                (df_filtrado['FECHA'] >= periodo_inicio) & 
+                (df_filtrado['FECHA'] <= periodo_fin)
+            ]
+        
+        return df_filtrado
+        
+    except Exception as e:
+        print(f"Error al filtrar resultados: {str(e)}")
+        return df_resultado 

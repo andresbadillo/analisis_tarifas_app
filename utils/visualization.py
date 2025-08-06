@@ -4,32 +4,45 @@ import plotly.graph_objects as go
 import pandas as pd
 from typing import Optional
 
-def crear_grafico_comparacion(df_resultado: pd.DataFrame) -> Optional[go.Figure]:
+def crear_grafico_comparacion(df_resultado: pd.DataFrame, periodo_inicio: str = None, periodo_fin: str = None) -> Optional[go.Figure]:
     """
     Crea un gráfico interactivo comparando CU de RUITOQUE vs otro comercializador.
     
     Args:
         df_resultado: DataFrame con los resultados de la comparación.
+        periodo_inicio: Periodo de inicio para filtrar (opcional)
+        periodo_fin: Periodo final para filtrar (opcional)
     
     Returns:
         Figura de Plotly o None si hay error.
     """
     try:
+        # Filtrar datos si se especifican periodos
+        df_plot = df_resultado.copy()
+        if periodo_inicio and periodo_fin:
+            df_plot = df_plot[
+                (df_plot['FECHA'] >= periodo_inicio) & 
+                (df_plot['FECHA'] <= periodo_fin)
+            ]
+        
+        if df_plot.empty:
+            return None
+            
         # Identificar el comercializador para comparar
-        col_com = [col for col in df_resultado.columns if col.startswith("CU_") and col != "CU_RTQ"][0]
+        col_com = [col for col in df_plot.columns if col.startswith("CU_") and col != "CU_RTQ"][0]
         comercializador = col_com.replace("CU_", "")
 
         # Crear figura
         fig = go.Figure()
 
         # Separar periodos exitosos y de atención
-        periodos_exitosos = df_resultado[df_resultado['ESTADO'] == '✅ Exitoso']
-        periodos_atencion = df_resultado[df_resultado['ESTADO'] == '❌ Atención']
+        periodos_exitosos = df_plot[df_plot['ESTADO'] == '✅ Exitoso']
+        periodos_atencion = df_plot[df_plot['ESTADO'] == '❌ Atención']
 
         # Agregar línea para RUITOQUE (todos los periodos)
         fig.add_trace(go.Scatter(
-            x=df_resultado['FECHA'],
-            y=df_resultado['CU_RTQ'],
+            x=df_plot['FECHA'],
+            y=df_plot['CU_RTQ'],
             name='RUITOQUE',
             line=dict(color='#64B43F', width=2),
             mode='lines+markers'
@@ -37,8 +50,8 @@ def crear_grafico_comparacion(df_resultado: pd.DataFrame) -> Optional[go.Figure]
 
         # Agregar línea para el otro comercializador (todos los periodos)
         fig.add_trace(go.Scatter(
-            x=df_resultado['FECHA'],
-            y=df_resultado[col_com],
+            x=df_plot['FECHA'],
+            y=df_plot[col_com],
             name=comercializador,
             line=dict(color='#FF4B4B', width=2),
             mode='lines+markers'

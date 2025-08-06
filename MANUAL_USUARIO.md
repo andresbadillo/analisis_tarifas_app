@@ -120,6 +120,25 @@ La tabla muestra:
 - **G_RTQ/G_[COMPETIDOR]**: Componente de Generación
 - **C_RTQ/C_[COMPETIDOR]**: Componente de Comercialización
 
+### Indicadores de Promedio
+
+Después de la tabla de resultados, encontrará indicadores que muestran:
+
+- **Promedio RUITOQUE**: Costo Unitario promedio de RUITOQUE en el periodo seleccionado
+- **Promedio [Competidor]**: Costo Unitario promedio del competidor en el periodo seleccionado
+- **Diferencia Absoluta**: Diferencia en pesos y porcentaje entre los promedios
+- **Periodos Analizados**: Número de periodos incluidos en el análisis actual
+
+### Ajuste de Rango de Periodos
+
+Puede ajustar el rango de periodos para el análisis usando el slider:
+
+- **Slider de rango**: Arrastre los extremos del slider para seleccionar el periodo inicial y final
+- **Visualización**: El slider muestra las fechas disponibles y el rango seleccionado
+- **Información**: Se muestra automáticamente cuántos periodos están incluidos en el rango
+
+Los indicadores y gráfico se actualizan automáticamente al mover el slider.
+
 ### Gráfico Interactivo
 
 El gráfico muestra:
@@ -127,6 +146,7 @@ El gráfico muestra:
 - **Línea roja**: Precios del competidor
 - **Marcadores X**: Periodos donde la competencia fue más competitiva
 - **Interactividad**: Hover para ver valores exactos
+- **Filtrado dinámico**: Se actualiza según el rango de periodos seleccionado
 
 ---
 
@@ -163,8 +183,21 @@ El gráfico muestra:
 **Proceso**:
 1. Compare con varios competidores principales
 2. Analice periodos largos (24+ meses)
-3. Identifique tendencias de mercado
-4. Use esta información para estrategias de precios
+3. Use el slider para ajustar el rango y ver diferentes periodos
+4. Observe cómo cambian los promedios al mover el rango
+5. Identifique tendencias de mercado
+6. Use esta información para estrategias de precios
+
+### 4. Análisis Dinámico con Slider
+
+**Escenario**: Cliente quiere ver el comportamiento en periodos específicos
+
+**Proceso**:
+1. Ejecute la comparación inicial
+2. Use el slider de "Ajustar Rango de Periodos" para seleccionar el rango deseado
+3. Observe cómo cambian los indicadores de promedio en tiempo real
+4. Identifique el mejor periodo para mostrar a su cliente
+5. Descargue los resultados filtrados para su presentación
 
 ---
 
@@ -181,9 +214,10 @@ El gráfico muestra:
 ### Uso del Archivo Excel
 
 El archivo descargado contiene:
-- **Hoja "Comparacion"**: Datos completos de la comparación
+- **Hoja "Comparacion"**: Datos del análisis para el rango de periodos seleccionado
 - **Columnas organizadas**: Fácil de leer y presentar
-- **Datos listos**: Para usar en presentaciones o reportes
+- **Datos filtrados**: Solo incluye los periodos del rango ajustado con el slider
+- **Nombre descriptivo**: Incluye información del mercado, competidor y rango de fechas
 
 ---
 
