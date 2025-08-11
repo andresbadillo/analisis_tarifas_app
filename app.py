@@ -46,6 +46,9 @@ def reset_comparacion():
     st.session_state['mensajes_analisis'] = []
     st.session_state['slider_periodo_inicio'] = None
     st.session_state['slider_periodo_fin'] = None
+    # Limpiar flag de error de carga
+    if 'error_carga' in st.session_state:
+        del st.session_state['error_carga']
     # Limpiar selectores de periodos
     if 'periodo_inicio_selector' in st.session_state:
         del st.session_state['periodo_inicio_selector']
@@ -90,6 +93,21 @@ with st.sidebar:
     
     st.markdown("---")
     
+    st.header("📞 Soporte")
+    st.markdown("""
+    ### ¿Problemas de acceso?
+    Si tienes problemas para acceder al archivo de tarifas:
+    
+    **📧 Contacta al Analista de Ventas:**
+    - Solicita acceso al archivo "Tarifas comparativas.xlsm"
+    - Proporciona tu nombre de usuario
+    - Indica el motivo del acceso
+    
+    **🔄 Reintenta la carga** una vez autorizado
+    """)
+    
+    st.markdown("---")
+    
     # Información de versión y copyright
     st.markdown("""
     <div style='position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px;'>
@@ -103,6 +121,19 @@ st.header("1️⃣ Carga de Archivo")
 if not st.session_state['archivo_cargado']:
     # Inicializar cliente de SharePoint
     sharepoint_client = SharePointClient(token)
+    
+    # Variable para controlar si mostrar el botón de reintento
+    mostrar_boton_reintento = 'error_carga' in st.session_state
+    
+    # Solo mostrar botón de reintento si hubo un error previo
+    if mostrar_boton_reintento:
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("🔄 Reintentar Carga", type="secondary", key="reintentar_carga"):
+                # Limpiar el flag de error y reintentar
+                if 'error_carga' in st.session_state:
+                    del st.session_state['error_carga']
+                st.rerun()
     
     with st.spinner('Descargando archivo desde SharePoint y procesando datos...'):
         archivo_bytes = sharepoint_client.download_file()
@@ -118,9 +149,32 @@ if not st.session_state['archivo_cargado']:
                     if df_procesado is not None:
                         st.session_state['df_tarifas'] = df_procesado
                         st.session_state['archivo_cargado'] = True
+                        # Limpiar flag de error si existe
+                        if 'error_carga' in st.session_state:
+                            del st.session_state['error_carga']
                         st.rerun()
         else:
-            st.error("No se pudo descargar el archivo. Verifica la conexión y permisos.")
+            # Marcar que hubo un error de carga
+            st.session_state['error_carga'] = True
+            
+            # El error ya fue manejado en SharePointClient._handle_error()
+            # Mostramos información adicional y opciones para el usuario
+            st.markdown("---")
+            st.markdown("""
+            ### 📋 **Resumen del Problema**
+            La aplicación no pudo acceder al archivo de tarifas debido a permisos insuficientes.
+            
+            ### 🎯 **Acciones Recomendadas**
+            1. **Contacta al Analista de Ventas** para solicitar acceso
+            2. **Espera la autorización** del administrador
+            3. **Usa el botón "Reintentar Carga"** una vez autorizado
+            """)
+            
+            # Botón de reintento más prominente
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.button("🔄 Reintentar Carga", type="primary", key="reintentar_carga_2")
+            
             st.stop()
 else:
     # Mostrar resumen de datos del archivo cargado

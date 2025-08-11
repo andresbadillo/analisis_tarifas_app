@@ -74,16 +74,68 @@ class SharePointClient:
             response: Objeto de respuesta de requests.
             url (str): URL que se intentó consultar.
         """
-        st.error(f"No se pudo descargar el archivo de SharePoint. Código: {response.status_code}")
+        # Manejo específico para error de permisos (403)
+        if response.status_code == 403:
+            st.error("🚫 **Error de Permisos**")
+            st.markdown("""
+            **No tienes permisos para acceder al archivo de tarifas.**
+            
+            Esto puede deberse a:
+            - Tu cuenta no tiene los permisos necesarios para acceder al archivo
+            - El archivo requiere autorización específica
+            - Tu rol en la organización no incluye acceso a este recurso
+            
+            **¿Qué hacer?**
+            📞 **Contacta al Analista de Ventas** para que autorice tu acceso al archivo:
+            - **"Tarifas comparativas.xlsm"** ubicado en **"Tarifas Reguladas"**
+            - Proporciona tu nombre de usuario y el motivo del acceso
+            - Una vez autorizado, podrás usar la aplicación normalmente
+            
+            **Información técnica para el administrador:**
+            - Archivo: `Tarifas Reguladas/Tarifas comparativas.xlsm`
+            - Error: 403 - Access Denied
+            - Usuario: Autenticado correctamente, pero sin permisos de archivo
+            """)
+            
+            # Mostrar información técnica solo en modo debug
+            with st.expander("🔧 Información técnica (para administradores)"):
+                st.write(f"**Código de error:** {response.status_code}")
+                try:
+                    error_data = response.json()
+                    st.write("**Respuesta de error:**", error_data)
+                except Exception:
+                    st.write("**Respuesta de error (texto):**", response.text)
+                st.write("**URL consultada:**", url)
+                st.write("**Token (primeros 50 caracteres):**", self.token[:50] + "...")
         
-        try:
-            error_data = response.json()
-            st.write("Respuesta de error:", error_data)
-        except Exception:
-            st.write("Respuesta de error (texto):", response.text)
-        
-        st.write("URL consultada:", url)
-        st.write("Token (primeros 50 caracteres):", self.token[:50] + "...")
+        # Manejo para otros errores
+        else:
+            st.error(f"❌ **Error al descargar archivo**")
+            st.markdown(f"""
+            **No se pudo descargar el archivo de SharePoint.**
+            
+            **Código de error:** {response.status_code}
+            
+            **Posibles causas:**
+            - Problema de conectividad con SharePoint
+            - El archivo no existe o fue movido
+            - Error temporal del servicio
+            
+            **Solución:**
+            - Verifica tu conexión a internet
+            - Intenta nuevamente en unos minutos
+            - Si el problema persiste, contacta al administrador del sistema
+            """)
+            
+            # Mostrar información técnica solo en modo debug
+            with st.expander("🔧 Información técnica (para administradores)"):
+                try:
+                    error_data = response.json()
+                    st.write("**Respuesta de error:**", error_data)
+                except Exception:
+                    st.write("**Respuesta de error (texto):**", response.text)
+                st.write("**URL consultada:**", url)
+                st.write("**Token (primeros 50 caracteres):**", self.token[:50] + "...")
     
     def test_connection(self):
         """

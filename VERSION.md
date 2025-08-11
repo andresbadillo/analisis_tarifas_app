@@ -162,5 +162,48 @@
 
 ---
 
+## v2.3.2 (Agosto 2025)
+
+### 🚫 Mejora en Manejo de Errores de Permisos
+- **Mensajes de Error Amigables**: Reemplazados los mensajes técnicos por explicaciones claras y orientadas al usuario
+- **Guía de Acción Específica**: Instrucciones claras sobre cómo contactar al Analista de Ventas para solicitar permisos
+- **Información Contextual**: Explicación de las posibles causas del error de permisos
+
+### 🔄 Funcionalidad de Reintento
+- **Botón de Reintento Inteligente**: Botón "🔄 Reintentar Carga" solo aparece cuando hay un error de carga
+- **Control de Estado**: Sistema de flags para controlar cuándo mostrar el botón de reintento
+- **Limpieza Automática**: El flag de error se limpia automáticamente cuando la carga es exitosa
+- **Experiencia Fluida**: No es necesario recargar toda la página para reintentar
+
+### 📞 Información de Soporte Mejorada
+- **Sección de Soporte en Sidebar**: Nueva sección con información de contacto y guía de solución de problemas
+- **Instrucciones Claras**: Pasos específicos para solicitar acceso al archivo
+- **Información Técnica Separada**: Detalles técnicos ocultos en expanders para no abrumar al usuario
+
+### 🔧 Mejoras Técnicas en Manejo de Errores
+- **Manejo Específico por Código de Error**: Diferentes mensajes para error 403 vs otros errores
+- **Información Técnica para Administradores**: Detalles técnicos disponibles en expanders para debugging
+- **Estructura de Mensajes Mejorada**: Uso de markdown para mejor formato y legibilidad
+
+### 📋 Documentación de Troubleshooting
+- **Nuevo Archivo TROUBLESHOOTING.md**: Guía completa de solución de problemas
+- **Checklist de Verificación**: Lista de verificación antes de contactar soporte
+- **Instrucciones para Administradores**: Guía para otorgar permisos en SharePoint y Azure AD
+- **Contactos de Soporte**: Información de contacto organizada por tipo de usuario
+
+### 🎯 Beneficios para Usuarios
+- **Menos Confusión**: Mensajes claros sobre qué hacer cuando no tienen permisos
+- **Proceso Claro**: Instrucciones paso a paso para obtener acceso
+- **Menos Tiempo de Resolución**: Información específica sobre a quién contactar
+- **Mejor Experiencia**: No se sienten perdidos cuando encuentran un error
+
+### 🎯 Beneficios para Administradores
+- **Información Técnica Disponible**: Detalles de debugging sin abrumar al usuario final
+- **Guía de Resolución**: Instrucciones claras para otorgar permisos
+- **Menos Tickets de Soporte**: Usuarios pueden resolver problemas comunes por sí mismos
+- **Documentación Estructurada**: Guía de troubleshooting organizada y fácil de seguir
+
+---
+
 **Desarrollado por**: [andresbadillo.co](https://www.andresbadillo.co/)  
 **Mantenido por**: Equipo de Desarrollo Ruitoque Energía 

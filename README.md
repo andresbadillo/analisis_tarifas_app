@@ -26,6 +26,7 @@ analisis_tarifas_app/
 ├── test_connection.py            # Script de prueba de conexión
 ├── requirements.txt              # Dependencias
 ├── .env                          # Variables de entorno
+├── TROUBLESHOOTING.md            # Guía de solución de problemas
 └── README.md                     # Este archivo
 ```
 
@@ -124,7 +125,12 @@ La aplicación está diseñada con una arquitectura modular que separa:
 
 ## 📞 Soporte
 
-Desarrollado por: [andresbadillo.co](https://www.andresbadillo.co/)
+### Problemas Comunes
+Si encuentras problemas al usar la aplicación, consulta la [Guía de Solución de Problemas](TROUBLESHOOTING.md) para obtener ayuda.
+
+### Contactos
+- **Desarrollado por**: [andresbadillo.co](https://www.andresbadillo.co/)
+- **Soporte Técnico**: Consulta la sección de contactos en TROUBLESHOOTING.md
 
 ## 📝 Changelog
 

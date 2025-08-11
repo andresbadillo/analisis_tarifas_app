@@ -19,7 +19,8 @@ INITIAL_SESSION_STATE = {
     'mensajes_analisis': [],
     'slider_periodo_inicio': None,
     'slider_periodo_fin': None,
-    'df_resultado_filtrado': None
+    'df_resultado_filtrado': None,
+    'error_carga': False
 }
 
 # Columnas necesarias para el análisis

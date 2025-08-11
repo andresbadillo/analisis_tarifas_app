@@ -21,7 +21,7 @@ La **Aplicación de Análisis de Tarifas de Energía** es una herramienta diseñ
 ### 1. Acceso a la Aplicación
 
 1. **Abrir el navegador** y dirigirse a la URL de la aplicación
-2. **Iniciar sesión** con sus credenciales corporativas (Azure AD)
+2. **Iniciar sesión** con sus credenciales corporativas (Microsoft - Azure AD)
 3. **Esperar** a que se cargue automáticamente el archivo de tarifas desde SharePoint
 
 ### 2. Pantalla Principal
