@@ -148,6 +148,104 @@ El gráfico muestra:
 - **Interactividad**: Hover para ver valores exactos
 - **Filtrado dinámico**: Se actualiza según el rango de periodos seleccionado
 
+### Botones de Acción
+
+Después del gráfico encontrará dos botones importantes:
+
+- **📥 Descargar Resultados**: Descarga un archivo Excel con los datos del análisis
+- **🔄 Nueva Comparación**: Reinicia todo el proceso para analizar otro escenario
+
+---
+
+## 💰 Paso 5: Análisis de Ahorro Económico (NUEVO)
+
+### ¿Qué es el Análisis de Ahorro?
+
+Esta nueva funcionalidad calcula el **beneficio económico real** que tendría un cliente si cambia de su comercializador actual a RUITOQUE, basándose en su consumo promedio mensual y los precios del periodo seleccionado.
+
+### Fórmula del Ahorro
+
+```
+Ahorro Total = Σ(CU_mes_n_COMERCIALIZADOR × Consumo_Promedio) - Σ(CU_mes_n_RUITOQUE × Consumo_Promedio)
+```
+
+Donde:
+- **Σ** = Sumatoria de todos los periodos seleccionados en el slider
+- **CU_mes_n** = Costo Unitario de cada mes específico
+- **Consumo_Promedio** = Consumo promedio mensual del cliente en kWh
+
+### Cómo Usar el Análisis de Ahorro
+
+#### 5.1 Ingresar Consumo del Cliente
+- **Campo**: "Consumo promedio mensual del cliente (kWh)"
+- **Valor por defecto**: 1,000 kWh
+- **Rango**: 1 kWh a 1,000,000 kWh
+- **Recomendación**: Use el consumo real del cliente para cálculos precisos
+
+#### 5.2 Calcular Ahorro
+1. **Ingrese** el consumo promedio mensual del cliente
+2. **Haga clic** en "💰 Calcular Ahorro"
+3. **Espere** a que se procese el cálculo
+4. **Visualice** los resultados detallados
+
+#### 5.3 Reiniciar Análisis
+- **Botón**: "🔄 Reiniciar Análisis"
+- **Función**: Limpia los resultados del análisis de ahorro
+- **Uso**: Cuando quiera calcular con un consumo diferente
+
+### Interpretación de Resultados del Ahorro
+
+#### Métricas Principales
+- **Ahorro Total**: Beneficio económico en todo el periodo analizado
+- **Ahorro Mensual Promedio**: Beneficio promedio mensual
+- **Ahorro por kWh**: Diferencia en el costo unitario por kWh
+- **Periodos Analizados**: Número de meses incluidos en el análisis
+
+#### Tabla de Detalle por Periodo
+- **FECHA**: Mes del análisis
+- **CU RUITOQUE**: Costo unitario de RUITOQUE en ese mes
+- **CU [Competidor]**: Costo unitario del competidor en ese mes
+- **Costo Mensual RUITOQUE**: CU × Consumo Promedio
+- **Costo Mensual Competidor**: CU × Consumo Promedio
+- **Diferencia Mensual**: Ahorro/costo adicional en ese mes específico
+
+#### Resumen de la Sumatoria
+- **Sumatoria del Competidor**: Total de todos los costos mensuales
+- **Sumatoria de RUITOQUE**: Total de todos los costos mensuales
+- **Resultado Final**: Diferencia entre ambas sumatorias
+- **Promedio por Mes**: Resultado total dividido por el número de periodos
+
+### Casos de Uso del Análisis de Ahorro
+
+#### 1. Propuesta de Cambio de Proveedor
+**Escenario**: Cliente actual considerando cambiar a RUITOQUE
+
+**Proceso**:
+1. Ejecute la comparación con el proveedor actual del cliente
+2. Use el slider para seleccionar los últimos 12 meses
+3. Ingrese el consumo promedio mensual del cliente
+4. Calcule el ahorro total
+5. Presente: *"Al cambiar a RUITOQUE, usted ahorraría $X en los próximos 12 meses"*
+
+#### 2. Análisis de Beneficio por Consumo
+**Escenario**: Diferentes clientes con diferentes consumos
+
+**Proceso**:
+1. Ejecute la comparación base
+2. Calcule el ahorro con el consumo del Cliente A
+3. Reinicie el análisis
+4. Calcule el ahorro con el consumo del Cliente B
+5. Compare los beneficios para cada cliente
+
+#### 3. Justificación de Precios
+**Escenario**: Cliente cuestiona por qué RUITOQUE es más caro en algunos periodos
+
+**Proceso**:
+1. Analice un periodo más amplio (24+ meses)
+2. Calcule el ahorro total en el periodo completo
+3. Muestre que aunque en algunos meses RUITOQUE puede ser más caro, el beneficio total es positivo
+4. Enfoque en el valor a largo plazo, no en periodos específicos
+
 ---
 
 ## 💼 Casos de Uso para Ventas
@@ -277,8 +375,8 @@ Para analizar otro escenario:
 
 ### Para Problemas Técnicos
 - **Desarrollador**: [andresbadillo.co](https://www.andresbadillo.co/)
-- **Versión**: 2.3.1
-- **Última actualización**: Agosto 2025
+- **Versión**: 2.4.0
+- **Última actualización**: Diciembre 2025
 
 ### Para Consultas Comerciales
 - Contactar al analista de ventas

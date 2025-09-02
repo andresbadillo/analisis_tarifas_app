@@ -2,7 +2,7 @@
 
 # Configuración de la página
 PAGE_CONFIG = {
-    "page_title": "Análisis de Tarifas - Ruitoque",
+    "page_title": "Análisis de Tarifas - Ruitoque v2.4.0",
     "page_icon": "assets/Isotipo.png",
     "layout": "wide",
     "initial_sidebar_state": "expanded",
@@ -20,7 +20,10 @@ INITIAL_SESSION_STATE = {
     'slider_periodo_inicio': None,
     'slider_periodo_fin': None,
     'df_resultado_filtrado': None,
-    'error_carga': False
+    'error_carga': False,
+    'mostrar_analisis_ahorro': False,
+    'resultados_ahorro': None,
+    'consumo_promedio_kwh': None
 }
 
 # Columnas necesarias para el análisis

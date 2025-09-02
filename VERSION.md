@@ -205,5 +205,55 @@
 
 ---
 
+## v2.4.0 (Septiembre 2025)
+
+### ✨ Nueva Funcionalidad: Análisis de Ahorro Económico
+- **Cálculo de Beneficio Real**: Nueva funcionalidad que calcula el ahorro económico real que tendría un cliente al cambiar a RUITOQUE
+- **Fórmula Matemática Completa**: Implementación de la fórmula Σ(CU_mes_n × Consumo_Promedio)_Competidor - Σ(CU_mes_n × Consumo_Promedio)_RUITOQUE
+- **Input de Consumo del Cliente**: Campo para ingresar el consumo promedio mensual en kWh del cliente
+- **Métricas de Ahorro**: Cálculo de ahorro total, mensual promedio y por kWh
+
+### 📊 Visualización Detallada del Ahorro
+- **Tabla de Detalle por Periodo**: Muestra costos mensuales para cada comercializador por periodo
+- **Resumen de Sumatoria**: Visualización clara de las sumatorias totales y el resultado final
+- **Explicación Matemática**: Fórmulas y cálculos paso a paso con valores numéricos
+- **Manejo de Casos**: Diferencia entre ahorro (verde) y costo adicional (rojo)
+
+### 🔧 Mejoras en la Arquitectura
+- **Nuevo Módulo**: `utils/savings_analysis.py` para análisis de ahorro
+- **Validación Robusta**: Compatibilidad con estructura de datos de sufijos (CU_RTQ, CU_COMPETIDOR)
+- **Manejo Inteligente**: Identificación automática de competidores en diferentes formatos
+- **Estado de Sesión Mejorado**: Nuevas variables para controlar el análisis de ahorro
+
+### 📱 Reorganización de la Interfaz
+- **Flujo Optimizado**: Botones de acción (Descargar/Nueva Comparación) después del gráfico
+- **Análisis de Ahorro Opcional**: Paso adicional que no interrumpe el flujo principal
+- **Información Contextual**: Explicación clara del propósito de cada sección
+- **Botones Intuitivos**: Botones de calcular, reiniciar y visualizar resultados
+
+### 🎯 Casos de Uso para Ventas
+- **Propuesta de Cambio**: Cálculo preciso del beneficio económico para clientes actuales
+- **Análisis por Consumo**: Comparación de beneficios para diferentes tipos de clientes
+- **Justificación de Precios**: Demostración del valor a largo plazo vs periodos específicos
+- **Presentaciones Comerciales**: Datos concretos para argumentos de venta
+
+### 🐛 Correcciones Técnicas
+- **Error de COMERCIALIZADOR**: Solucionado problema de compatibilidad con estructura de datos
+- **Validación de Columnas**: Verificación robusta de la estructura del DataFrame
+- **Manejo de Errores**: Mejor gestión de casos edge y datos inconsistentes
+
+### 📋 Documentación Actualizada
+- **README.md**: Actualizado con nueva funcionalidad y estructura del proyecto
+- **MANUAL_USUARIO.md**: Guía completa del análisis de ahorro con casos de uso
+- **Changelog**: Historial detallado de todas las mejoras y correcciones
+
+### 🚀 Beneficios para Ejecutivos de Ventas
+- **Argumentos Concretos**: Números precisos del beneficio económico para cada cliente
+- **Análisis Personalizado**: Cálculos basados en el consumo real del cliente
+- **Presentaciones Profesionales**: Datos detallados y visualizaciones claras
+- **Toma de Decisiones**: Información completa para estrategias de precios
+
+---
+
 **Desarrollado por**: [andresbadillo.co](https://www.andresbadillo.co/)  
 **Mantenido por**: Equipo de Desarrollo Ruitoque Energía 

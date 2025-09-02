@@ -17,7 +17,8 @@ analisis_tarifas_app/
 ├── utils/                         # Utilidades
 │   ├── data_processing.py        # Procesamiento de datos
 │   ├── comparison.py             # Lógica de comparación
-│   └── visualization.py          # Visualización de datos
+│   ├── visualization.py          # Visualización de datos
+│   └── savings_analysis.py       # Análisis de ahorro económico
 ├── assets/                        # Recursos estáticos
 │   ├── path1310.png
 │   ├── Logo1.png
@@ -76,6 +77,7 @@ streamlit run test_connection.py
 5. **Selección de Periodos**: Usuario define el rango de periodos a analizar (inicio y final)
 6. **Análisis**: Se ejecuta la comparación CU vs RUITOQUE en el rango especificado
 7. **Resultados**: Visualización de gráficos y exportación de datos
+8. **Análisis de Ahorro**: Cálculo del beneficio económico real para el cliente
 
 ## 🛠️ Características Técnicas
 
@@ -95,6 +97,13 @@ streamlit run test_connection.py
 - Configuración centralizada de Azure y SharePoint
 - Variables de entorno organizadas
 - Configuración de endpoints y permisos
+
+#### `utils/savings_analysis.py`
+- **NUEVO**: Análisis completo de ahorro económico
+- Cálculo de beneficio real basado en consumo del cliente
+- Fórmula: Σ(CU_mes_n × Consumo_Promedio)_Competidor - Σ(CU_mes_n × Consumo_Promedio)_RUITOQUE
+- Visualización detallada de costos por periodo
+- Métricas de ahorro total, mensual y por kWh
 
 ### Dependencias Principales
 
@@ -133,24 +142,9 @@ Si encuentras problemas al usar la aplicación, consulta la [Guía de Solución 
 - **Soporte Técnico**: Consulta la sección de contactos en TROUBLESHOOTING.md
 
 ## 📝 Changelog
-
-### v1.2.0 (2025)
-- ✨ **Nueva funcionalidad**: Selección manual de rango de periodos
-- 🔧 **Mejora**: Periodo de inicio por defecto en 2024-01
-- 🔧 **Mejora**: Periodo final por defecto en el último periodo disponible
-- 🔧 **Mejora**: Validación mejorada de rangos de periodos
-- 🐛 **Corrección**: Orden cronológico correcto en selectores de periodos
-- 🐛 **Corrección**: Errores de linter en configuración de página
-- 🐛 **Corrección**: Compatibilidad mejorada con exportación a Excel
-
-### v1.1.0 (2025)
-- 🏗️ **Refactorización**: Arquitectura modular implementada
-- 🔐 **Seguridad**: Autenticación Azure AD integrada
-- 📊 **Funcionalidad**: Comparación automática de CU vs competencia
-- 📈 **Visualización**: Gráficos interactivos con Plotly
-- 📤 **Exportación**: Descarga de resultados en Excel
+- **Versiones**: Consulta la sección de version en VERSION.md
 
 ---
 
-**Versión**: 1.2.0  
+**Versión**: 2.4.0  
 **Última actualización**: 2025 

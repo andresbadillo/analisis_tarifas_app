@@ -13,6 +13,7 @@ from auth.sharepoint import SharePointClient
 from utils.data_processing import cargar_tabla_desde_excel, procesar_df_tarifas
 from utils.comparison import comparar_cu, calcular_promedios_periodo, filtrar_resultados_por_periodo
 from utils.visualization import crear_grafico_comparacion
+from utils.savings_analysis import calcular_ahorro_energia, mostrar_analisis_ahorro
 
 # Ignorar advertencias
 warnings.filterwarnings('ignore')
@@ -46,6 +47,9 @@ def reset_comparacion():
     st.session_state['mensajes_analisis'] = []
     st.session_state['slider_periodo_inicio'] = None
     st.session_state['slider_periodo_fin'] = None
+    st.session_state['mostrar_analisis_ahorro'] = False
+    st.session_state['resultados_ahorro'] = None
+    st.session_state['consumo_promedio_kwh'] = None
     # Limpiar flag de error de carga
     if 'error_carga' in st.session_state:
         del st.session_state['error_carga']
@@ -84,11 +88,14 @@ with st.sidebar:
     1. Espere a que se cargue archivo y la aplicación realice un análisis previo de los datos
     2. Seleccione el mercado, comercializador y nivel de tensión a comparar
     3. Seleccione los periodos inicial y final a comparar
-    5. Ejecute la comparación
-    6. Visualice los resultados y exporte en excel si lo desea
+    4. Ejecute la comparación
+    5. Visualice los resultados y gráfico de comparación
+    6. Exporte los resultados en Excel si lo desea
+    7. **Análisis de Ahorro**: Ingrese el consumo promedio del cliente para calcular el ahorro total
     
     ### Notas
     - El archivo exportado contiene los periodos resultantes de la comparación
+    - El análisis de ahorro calcula el beneficio económico real para el cliente
     """)
     
     st.markdown("---")
@@ -111,7 +118,7 @@ with st.sidebar:
     # Información de versión y copyright
     st.markdown("""
     <div style='position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px;'>
-    <small>v2.3.1 | © 2025 Ruitoque Energía</small>
+    <small>v2.4.0 | © 2025 Ruitoque Energía</small>
     </div>
     """, unsafe_allow_html=True)
 
@@ -201,7 +208,7 @@ else:
 # --- SECCIÓN 2: COMPARACIÓN DE TARIFAS ---
 if st.session_state['archivo_cargado']:
     st.markdown("---")
-    st.header("2️⃣ Comparación de Tarifas")
+    st.header("2️⃣ Comparación de Tarifas y Visualización")
     
     df_procesado = st.session_state['df_tarifas']
     
@@ -444,7 +451,8 @@ if st.session_state['archivo_cargado']:
             if fig:
                 st.plotly_chart(fig, use_container_width=True)
             
-            # Botones de acción
+            # Botones de acción (después del gráfico)
+            st.markdown("---")
             col1, col2 = st.columns(2)
             with col1:
                 # Botón de descarga con datos filtrados
@@ -472,6 +480,67 @@ if st.session_state['archivo_cargado']:
                 if st.button('🔄 Nueva Comparación', key='nueva_comparacion'):
                     reset_comparacion()
                     st.rerun()
+            
+            # --- SECCIÓN 3: ANÁLISIS DE AHORRO ---
+            st.markdown("---")
+            st.header("3️⃣ Análisis de Ahorro")
+            
+            st.info("""
+            **💡 ¿Qué hace esta sección?**
+            
+            Calcula el **ahorro económico real** que tendría un cliente si cambia de su comercializador actual a RUITOQUE, 
+            basándose en su consumo promedio mensual y los precios del periodo seleccionado.
+            
+            **📊 Fórmula del Ahorro:**
+            ```
+            Ahorro Total = Σ(CU_mes_n_COMERCIALIZADOR × Consumo_Promedio) - Σ(CU_mes_n_RUITOQUE × Consumo_Promedio)
+            ```
+            """)
+            
+            # Input para consumo promedio del cliente
+            col1, col2, col3 = st.columns([2, 2, 1])
+            with col1:
+                consumo_promedio = st.number_input(
+                    'Consumo promedio mensual del cliente (kWh):',
+                    min_value=1.0,
+                    max_value=1000000.0,
+                    value=st.session_state.get('consumo_promedio_kwh', 1000.0),
+                    step=100.0,
+                    help="Ingrese el consumo promedio mensual en kilowatt-hora del cliente"
+                )
+                st.session_state['consumo_promedio_kwh'] = consumo_promedio
+            
+            with col2:
+                st.markdown("")
+                st.markdown("")
+                if st.button('💰 Calcular Ahorro', type='primary', key='calcular_ahorro_btn'):
+                    with st.spinner('Calculando análisis de ahorro...'):
+                        resultados_ahorro = calcular_ahorro_energia(
+                            st.session_state['df_resultado'],
+                            st.session_state['slider_periodo_inicio'],
+                            st.session_state['slider_periodo_fin'],
+                            consumo_promedio
+                        )
+                        
+                        if resultados_ahorro:
+                            st.session_state['resultados_ahorro'] = resultados_ahorro
+                            st.session_state['mostrar_analisis_ahorro'] = True
+                            st.success("✅ Análisis de ahorro calculado exitosamente")
+                            st.rerun()
+                        else:
+                            st.error("❌ No se pudo calcular el análisis de ahorro. Verifique los datos.")
+            
+            with col3:
+                st.markdown("")
+                st.markdown("")
+                if st.button('🔄 Reiniciar Análisis', key='reiniciar_ahorro_btn'):
+                    st.session_state['mostrar_analisis_ahorro'] = False
+                    st.session_state['resultados_ahorro'] = None
+                    st.rerun()
+            
+            # Mostrar resultados del análisis de ahorro si están disponibles
+            if st.session_state.get('mostrar_analisis_ahorro') and st.session_state.get('resultados_ahorro'):
+                mostrar_analisis_ahorro(st.session_state['resultados_ahorro'])
 
 else:
     st.info("ℹ️ Por favor, primero carga el archivo de tarifas para realizar la comparación.")
