@@ -346,14 +346,22 @@ if st.session_state['archivo_cargado']:
             st.subheader("📈 Resultados Detallados")
             st.dataframe(st.session_state['df_resultado'])
             
-            # Inicializar valores del slider si no existen
-            if st.session_state['slider_periodo_inicio'] is None:
-                st.session_state['slider_periodo_inicio'] = st.session_state['parametros_comparacion']['periodo_inicio']
-            if st.session_state['slider_periodo_fin'] is None:
-                st.session_state['slider_periodo_fin'] = st.session_state['parametros_comparacion']['periodo_fin']
-            
             # Obtener fechas disponibles para el slider
             fechas_disponibles = sorted(st.session_state['df_resultado']['FECHA'].unique())
+            
+            # Verificar que tenemos fechas válidas antes de continuar
+            if not fechas_disponibles:
+                st.error("❌ No hay fechas disponibles para mostrar en el slider")
+                st.stop()
+            
+            # Inicializar valores del slider si no existen o si no están en las fechas disponibles
+            if (st.session_state['slider_periodo_inicio'] is None or 
+                st.session_state['slider_periodo_inicio'] not in fechas_disponibles):
+                st.session_state['slider_periodo_inicio'] = fechas_disponibles[0]
+            
+            if (st.session_state['slider_periodo_fin'] is None or 
+                st.session_state['slider_periodo_fin'] not in fechas_disponibles):
+                st.session_state['slider_periodo_fin'] = fechas_disponibles[-1]
             
             # Slider para seleccionar rango de periodos
             st.subheader("🎛️ Ajustar Rango de Periodos")
