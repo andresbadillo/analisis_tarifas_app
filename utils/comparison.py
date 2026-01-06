@@ -43,12 +43,43 @@ def comparar_cu(
             mensajes_analisis.append("⚠️ No hay datos suficientes para comparar")
             return None
 
+        # Agrupar por FECHA y tomar el promedio si hay múltiples registros para el mismo periodo
+        # Esto asegura que no se pierdan periodos por duplicados
+        df_rtq_agg = df_rtq_full.groupby('FECHA').agg({
+            'G': 'mean',
+            'C': 'mean',
+            'CU': 'mean',
+            'MERCADO': 'first',
+            'NT': 'first'
+        }).reset_index()
+        
+        df_sel_agg = df_sel_full.groupby('FECHA').agg({
+            'G': 'mean',
+            'C': 'mean',
+            'CU': 'mean',
+            'MERCADO': 'first',
+            'NT': 'first'
+        }).reset_index()
+
+        # Información de depuración: mostrar periodos disponibles en cada comercializador
+        fechas_rtq = set(df_rtq_agg['FECHA'].unique())
+        fechas_sel = set(df_sel_agg['FECHA'].unique())
+        fechas_comunes = fechas_rtq.intersection(fechas_sel)
+        fechas_solo_rtq = fechas_rtq - fechas_sel
+        fechas_solo_sel = fechas_sel - fechas_rtq
+        
+        if fechas_solo_rtq:
+            mensajes_analisis.append(f"ℹ️ Periodos solo en RUITOQUE (no se incluirán): {sorted(fechas_solo_rtq)}")
+        if fechas_solo_sel:
+            mensajes_analisis.append(f"ℹ️ Periodos solo en {comercializador_seleccionado} (no se incluirán): {sorted(fechas_solo_sel)}")
+
         suf = comercializador_seleccionado.replace(' ', '_')
         df_cmp = pd.merge(
-            df_rtq_full,
-            df_sel_full,
+            df_rtq_agg,
+            df_sel_agg,
             on='FECHA',
-            suffixes=('_RTQ', f'_{suf}')
+            suffixes=('_RTQ', f'_{suf}'),
+            how='inner'  # Solo periodos donde ambos tienen datos
         ).sort_values('FECHA', ascending=False).reset_index(drop=True)
 
         # Filtrar por rango de periodos si se especifica

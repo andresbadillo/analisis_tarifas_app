@@ -12,7 +12,7 @@ from auth.azure_auth import AzureAuth
 from auth.sharepoint import SharePointClient
 from utils.data_processing import cargar_tabla_desde_excel, procesar_df_tarifas
 from utils.comparison import comparar_cu, calcular_promedios_periodo, filtrar_resultados_por_periodo
-from utils.visualization import crear_grafico_comparacion
+from utils.visualization import crear_grafico_comparacion, crear_grafico_comparacion_multiple
 from utils.savings_analysis import calcular_ahorro_energia, mostrar_analisis_ahorro
 
 # Ignorar advertencias
@@ -43,13 +43,18 @@ def reset_comparacion():
     st.session_state['mostrar_resultados'] = False
     st.session_state['df_resultado'] = None
     st.session_state['df_resultado_filtrado'] = None
+    st.session_state['resultados_comparacion'] = {}
+    st.session_state['comercializador_activo'] = None
     st.session_state['parametros_comparacion'] = {}
-    st.session_state['mensajes_analisis'] = []
+    st.session_state['mensajes_analisis'] = {}
     st.session_state['slider_periodo_inicio'] = None
     st.session_state['slider_periodo_fin'] = None
     st.session_state['mostrar_analisis_ahorro'] = False
     st.session_state['resultados_ahorro'] = None
     st.session_state['consumo_promedio_kwh'] = None
+    st.session_state['comercializador_ahorro'] = None
+    if 'comercializador_ahorro_anterior' in st.session_state:
+        del st.session_state['comercializador_ahorro_anterior']
     # Limpiar flag de error de carga
     if 'error_carga' in st.session_state:
         del st.session_state['error_carga']
@@ -118,7 +123,7 @@ with st.sidebar:
     # Información de versión y copyright
     st.markdown("""
     <div style='position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px;'>
-    <small>v2.4.0 | © 2025 Ruitoque Energía</small>
+    <small>v3.1.0 | © 2026 Ruitoque Energía</small>
     </div>
     """, unsafe_allow_html=True)
 
@@ -231,7 +236,7 @@ if st.session_state['archivo_cargado']:
                     if pd.notna(c) and c != "RUITOQUE"
                 ])
                 if comercializadores:
-                    comercializador = st.selectbox('Comercializador:', options=comercializadores, key='comercializador_selector')
+                    comercializador = st.selectbox('Comercializador 1 (Obligatorio):', options=comercializadores, key='comercializador_selector')
                 else:
                     st.error("No hay comercializadores disponibles para este mercado")
                     comercializador = None
@@ -240,38 +245,86 @@ if st.session_state['archivo_cargado']:
                 comercializador = None
         
         with col3:
-            if mercado and comercializador:
+            if mercado:
+                # Obtener niveles de tensión del mercado (no solo del comercializador)
                 niveles_tension = sorted([
-                    nt for nt in df_procesado[
-                        (df_procesado['MERCADO']==mercado) & 
-                        (df_procesado['COMERCIALIZADOR']==comercializador)
-                    ]['NT'].unique()
+                    nt for nt in df_procesado[df_procesado['MERCADO']==mercado]['NT'].unique()
                     if pd.notna(nt)
                 ])
                 if niveles_tension:
                     nt = st.selectbox('Nivel de Tensión:', options=niveles_tension, key='nt_selector')
                 else:
-                    st.error("No hay niveles de tensión disponibles para esta selección")
+                    st.error("No hay niveles de tensión disponibles para este mercado")
                     nt = None
             else:
-                st.info("Seleccione primero un mercado y comercializador")
+                st.info("Seleccione primero un mercado")
                 nt = None
+        
+        # Inicializar variables de comercializadores opcionales
+        comercializador_2 = None
+        comercializador_3 = None
+        
+        # Selectores de comercializadores opcionales
+        if mercado and comercializador and nt:
+            st.markdown("---")
+            st.subheader("📊 Comercializadores Adicionales (Opcionales)")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if mercado:
+                    comercializadores_opcionales = sorted([
+                        c for c in df_procesado[df_procesado['MERCADO']==mercado]['COMERCIALIZADOR'].unique()
+                        if pd.notna(c) and c != "RUITOQUE" and c != comercializador
+                    ])
+                    # Agregar opción "Ninguno" al inicio
+                    opciones_com2 = ["Ninguno"] + comercializadores_opcionales
+                    comercializador_2 = st.selectbox(
+                        'Comercializador 2 (Opcional):', 
+                        options=opciones_com2, 
+                        key='comercializador_2_selector',
+                        index=0
+                    )
+                    if comercializador_2 == "Ninguno":
+                        comercializador_2 = None
+            
+            with col2:
+                if mercado:
+                    # Excluir comercializador 1 y comercializador 2 de las opciones
+                    excluir = [comercializador]
+                    if comercializador_2:
+                        excluir.append(comercializador_2)
+                    comercializadores_opcionales_3 = sorted([
+                        c for c in df_procesado[df_procesado['MERCADO']==mercado]['COMERCIALIZADOR'].unique()
+                        if pd.notna(c) and c != "RUITOQUE" and c not in excluir
+                    ])
+                    # Agregar opción "Ninguno" al inicio
+                    opciones_com3 = ["Ninguno"] + comercializadores_opcionales_3
+                    comercializador_3 = st.selectbox(
+                        'Comercializador 3 (Opcional):', 
+                        options=opciones_com3, 
+                        key='comercializador_3_selector',
+                        index=0
+                    )
+                    if comercializador_3 == "Ninguno":
+                        comercializador_3 = None
         
         if mercado and comercializador and nt:
             # Selectores de periodos
             st.subheader("📅 Selección de Periodos")
+            
+            # Obtener fechas disponibles solo del comercializador principal (obligatorio)
+            # Calcular esto ANTES de las columnas para que esté disponible en ambas
+            fechas_disponibles = sorted(
+                df_procesado[
+                    (df_procesado['MERCADO'] == mercado) & 
+                    (df_procesado['COMERCIALIZADOR'] == comercializador) &
+                    (df_procesado['NT'] == nt)
+                ]['FECHA'].unique()
+            )
+            
             col1, col2 = st.columns(2)
             
             with col1:
-                # Obtener fechas disponibles para este filtro (orden cronológico)
-                fechas_disponibles = sorted(
-                    df_procesado[
-                        (df_procesado['MERCADO'] == mercado) & 
-                        (df_procesado['COMERCIALIZADOR'] == comercializador) &
-                        (df_procesado['NT'] == nt)
-                    ]['FECHA'].unique()
-                )
-                
                 if fechas_disponibles:
                     # Calcular el índice por defecto para los últimos 12 meses
                     # Si hay menos de 12 periodos, usar el primero disponible
@@ -305,7 +358,7 @@ if st.session_state['archivo_cargado']:
                     periodo_fin = None
             
             # Información sobre el rango seleccionado
-            if periodo_inicio and periodo_fin:
+            if periodo_inicio and periodo_fin and fechas_disponibles:
                 if periodo_inicio > periodo_fin:
                     st.warning("⚠️ El periodo de inicio debe ser menor o igual al periodo final")
                 else:
@@ -316,20 +369,59 @@ if st.session_state['archivo_cargado']:
             
             if st.button('▶️ Ejecutar Comparación', type='primary', key='ejecutar_btn'):
                 if periodo_inicio and periodo_fin and periodo_inicio <= periodo_fin:
-                    with st.spinner('Ejecutando comparación de tarifas...'):
-                        df_resultado = comparar_cu(df_procesado, mercado, comercializador, nt, periodo_inicio, periodo_fin)
+                    # Lista de comercializadores a comparar
+                    comercializadores_a_comparar = [comercializador]
+                    if comercializador_2:
+                        comercializadores_a_comparar.append(comercializador_2)
+                    if comercializador_3:
+                        comercializadores_a_comparar.append(comercializador_3)
                     
-                    if df_resultado is not None:
-                        st.session_state['df_resultado'] = df_resultado
+                    with st.spinner(f'Ejecutando comparación de tarifas con {len(comercializadores_a_comparar)} comercializador(es)...'):
+                        resultados_comparacion = {}
+                        mensajes_analisis = {}
+                        comercializadores_sin_datos = []
+                        
+                        # Ejecutar comparación para cada comercializador
+                        for com in comercializadores_a_comparar:
+                            df_resultado = comparar_cu(df_procesado, mercado, com, nt, periodo_inicio, periodo_fin)
+                            if df_resultado is not None:
+                                resultados_comparacion[com] = df_resultado
+                                # Capturar mensajes inmediatamente después de la comparación
+                                if 'mensajes_analisis' in st.session_state:
+                                    mensajes_temp = st.session_state['mensajes_analisis']
+                                    # Si es una lista (formato antiguo), guardarla directamente
+                                    if isinstance(mensajes_temp, list):
+                                        mensajes_analisis[com] = mensajes_temp.copy()
+                                    else:
+                                        # Si ya es un diccionario, tomar el valor para este comercializador
+                                        mensajes_analisis[com] = mensajes_temp.get(com, [])
+                                else:
+                                    mensajes_analisis[com] = []
+                            else:
+                                # Si es un comercializador opcional, solo registrar que no tiene datos
+                                if com != comercializador:
+                                    comercializadores_sin_datos.append(com)
+                    
+                    # Validar que al menos el comercializador principal tenga resultados
+                    if comercializador in resultados_comparacion:
+                        if comercializadores_sin_datos:
+                            st.warning(f"⚠️ Los siguientes comercializadores opcionales no tienen datos en el rango seleccionado: {', '.join(comercializadores_sin_datos)}")
+                        
+                        st.session_state['resultados_comparacion'] = resultados_comparacion
+                        st.session_state['mensajes_analisis'] = mensajes_analisis
+                        st.session_state['comercializador_activo'] = comercializador  # Por defecto el primero
+                        st.session_state['df_resultado'] = resultados_comparacion[comercializador]  # Resultado por defecto
                         st.session_state['mostrar_resultados'] = True
                         st.session_state['parametros_comparacion'] = {
                             'mercado': mercado,
-                            'comercializador': comercializador,
+                            'comercializadores': list(resultados_comparacion.keys()),  # Solo los que tienen datos
                             'nt': nt,
                             'periodo_inicio': periodo_inicio,
                             'periodo_fin': periodo_fin
                         }
                         st.rerun()
+                    else:
+                        st.error("❌ No se pudo ejecutar la comparación con el comercializador principal. Verifique los datos y el rango de periodos seleccionado.")
     else:
         # Mostrar parámetros de la comparación
         st.subheader("Parámetros de la comparación:")
@@ -337,16 +429,48 @@ if st.session_state['archivo_cargado']:
         with col1:
             st.info(f"🏢 Mercado: {st.session_state['parametros_comparacion']['mercado']}")
         with col2:
-            st.info(f"🏪 Comercializador: {st.session_state['parametros_comparacion']['comercializador']}")
+            comercializadores_str = ", ".join(st.session_state['parametros_comparacion']['comercializadores'])
+            st.info(f"🏪 Comercializadores: {comercializadores_str}")
         with col3:
             st.info(f"⚡ Nivel de Tensión: {st.session_state['parametros_comparacion']['nt']}")
         with col4:
             st.info(f"📅 Periodos: {st.session_state['parametros_comparacion']['periodo_inicio']} - {st.session_state['parametros_comparacion']['periodo_fin']}")
 
-        # Mostrar mensajes del análisis
+        # Selector de comercializador activo
+        if len(st.session_state['parametros_comparacion']['comercializadores']) > 1:
+            st.markdown("---")
+            st.subheader("🔀 Seleccionar Comercializador para Visualizar")
+            comercializador_activo = st.selectbox(
+                'Comercializador a visualizar:',
+                options=st.session_state['parametros_comparacion']['comercializadores'],
+                key='selector_comercializador_activo',
+                index=st.session_state['parametros_comparacion']['comercializadores'].index(
+                    st.session_state.get('comercializador_activo', st.session_state['parametros_comparacion']['comercializadores'][0])
+                ) if st.session_state.get('comercializador_activo') in st.session_state['parametros_comparacion']['comercializadores'] else 0
+            )
+            # Verificar si cambió el comercializador activo
+            comercializador_anterior = st.session_state.get('comercializador_activo')
+            st.session_state['comercializador_activo'] = comercializador_activo
+            
+            # Si cambió el comercializador, limpiar el resultado filtrado
+            if comercializador_anterior != comercializador_activo:
+                st.session_state['df_resultado_filtrado'] = None
+            
+            # Actualizar df_resultado con el comercializador activo
+            if comercializador_activo in st.session_state['resultados_comparacion']:
+                st.session_state['df_resultado'] = st.session_state['resultados_comparacion'][comercializador_activo]
+        else:
+            st.session_state['comercializador_activo'] = st.session_state['parametros_comparacion']['comercializadores'][0]
+            # Asegurar que df_resultado esté actualizado
+            if st.session_state['comercializador_activo'] in st.session_state.get('resultados_comparacion', {}):
+                st.session_state['df_resultado'] = st.session_state['resultados_comparacion'][st.session_state['comercializador_activo']]
+
+        # Mostrar mensajes del análisis para el comercializador activo
         st.subheader("📊 Análisis Periodo a Periodo")
-        for mensaje in st.session_state['mensajes_analisis']:
-            st.write(mensaje)
+        comercializador_activo = st.session_state['comercializador_activo']
+        if comercializador_activo in st.session_state.get('mensajes_analisis', {}):
+            for mensaje in st.session_state['mensajes_analisis'][comercializador_activo]:
+                st.write(mensaje)
 
         # Mostrar resultados
         if st.session_state['df_resultado'] is not None:
@@ -392,47 +516,69 @@ if st.session_state['archivo_cargado']:
             st.session_state['slider_periodo_inicio'] = slider_inicio
             st.session_state['slider_periodo_fin'] = slider_fin
             
-            # Calcular promedios para el rango seleccionado
-            promedios = calcular_promedios_periodo(
-                st.session_state['df_resultado'], 
-                st.session_state['slider_periodo_inicio'], 
-                st.session_state['slider_periodo_fin']
-            )
-            
-            # Mostrar indicadores de promedio
+            # Calcular promedios para todos los comercializadores
             st.subheader("📊 Promedios del Periodo Seleccionado")
-            col1, col2, col3, col4 = st.columns(4)
             
-            with col1:
-                st.metric(
-                    f"Promedio RUITOQUE", 
-                    f"${promedios['promedio_rtq']:,.2f}",
-                    help="Promedio del Costo Unitario de RUITOQUE en el periodo seleccionado"
-                )
+            # Calcular promedios para cada comercializador
+            todos_promedios = {}
+            for com in st.session_state['parametros_comparacion']['comercializadores']:
+                if com in st.session_state['resultados_comparacion']:
+                    df_com = st.session_state['resultados_comparacion'][com]
+                    promedios = calcular_promedios_periodo(
+                        df_com, 
+                        st.session_state['slider_periodo_inicio'], 
+                        st.session_state['slider_periodo_fin']
+                    )
+                    todos_promedios[com] = promedios
             
-            with col2:
-                st.metric(
-                    f"Promedio {promedios['comercializador']}", 
-                    f"${promedios['promedio_competidor']:,.2f}",
-                    help=f"Promedio del Costo Unitario de {promedios['comercializador']} en el periodo seleccionado"
-                )
-            
-            with col3:
-                diferencia_color = "normal" if promedios['diferencia_absoluta'] > 0 else "inverse"
-                st.metric(
-                    "Diferencia Absoluta", 
-                    f"${promedios['diferencia_absoluta']:,.2f}",
-                    delta=f"{promedios['diferencia_porcentual']:+.2f}%",
-                    delta_color=diferencia_color,
-                    help="Diferencia absoluta y porcentual entre promedios (positivo = RUITOQUE más competitivo)"
-                )
-            
-            with col4:
-                st.metric(
-                    "Periodos Analizados", 
-                    f"{promedios['periodos_analizados']}",
-                    help="Número de periodos incluidos en el análisis actual"
-                )
+            # Mostrar una fila por cada comercializador
+            for idx, com in enumerate(st.session_state['parametros_comparacion']['comercializadores']):
+                if com in todos_promedios:
+                    promedios = todos_promedios[com]
+                    st.markdown(f"**{com}**")
+                    col1, col2, col3, col4 = st.columns(4)
+                    
+                    with col1:
+                        st.metric(
+                            f"Promedio RUITOQUE", 
+                            f"${promedios['promedio_rtq']:,.2f}",
+                            help="Promedio del Costo Unitario de RUITOQUE en el periodo seleccionado"
+                        )
+                    
+                    with col2:
+                        st.metric(
+                            f"Promedio {promedios['comercializador']}", 
+                            f"${promedios['promedio_competidor']:,.2f}",
+                            help=f"Promedio del Costo Unitario de {promedios['comercializador']} en el periodo seleccionado"
+                        )
+                    
+                    with col3:
+                        # Lógica de colores:
+                        # - diferencia_absoluta > 0: RUITOQUE es más barato → porcentaje positivo → verde ("normal")
+                        # - diferencia_absoluta < 0: RUITOQUE es más caro → porcentaje negativo → rojo ("normal" muestra rojo para negativos)
+                        # Streamlit: "normal" = verde para positivos, rojo para negativos
+                        #           "inverse" = rojo para positivos, verde para negativos
+                        # Como queremos: verde cuando RUITOQUE es mejor, rojo cuando es peor
+                        # y el signo del porcentaje coincide con esto, usamos "normal"
+                        diferencia_color = "normal"
+                        
+                        st.metric(
+                            "Diferencia Absoluta", 
+                            f"${promedios['diferencia_absoluta']:,.2f}",
+                            delta=f"{promedios['diferencia_porcentual']:+.2f}%",
+                            delta_color=diferencia_color,
+                            help="Diferencia absoluta y porcentual entre promedios (positivo = RUITOQUE más competitivo, negativo = RUITOQUE menos competitivo)"
+                        )
+                    
+                    with col4:
+                        st.metric(
+                            "Periodos Analizados", 
+                            f"{promedios['periodos_analizados']}",
+                            help="Número de periodos incluidos en el análisis actual"
+                        )
+                    
+                    if idx < len(st.session_state['parametros_comparacion']['comercializadores']) - 1:
+                        st.markdown("---")
             
             # Filtrar datos para el gráfico
             df_filtrado = filtrar_resultados_por_periodo(
@@ -442,9 +588,9 @@ if st.session_state['archivo_cargado']:
             )
             st.session_state['df_resultado_filtrado'] = df_filtrado
             
-            # Crear y mostrar gráfico con datos filtrados
-            fig = crear_grafico_comparacion(
-                st.session_state['df_resultado'],
+            # Crear y mostrar gráfico con todos los comercializadores
+            fig = crear_grafico_comparacion_multiple(
+                st.session_state['resultados_comparacion'],
                 st.session_state['slider_periodo_inicio'],
                 st.session_state['slider_periodo_fin']
             )
@@ -455,26 +601,36 @@ if st.session_state['archivo_cargado']:
             st.markdown("---")
             col1, col2 = st.columns(2)
             with col1:
-                # Botón de descarga con datos filtrados
-                output = io.BytesIO()
+                # Descargar archivos para cada comercializador
+                st.subheader("📥 Descargar Resultados")
                 
-                # Usar datos filtrados si están disponibles, sino usar todos los datos
-                df_para_exportar = st.session_state['df_resultado_filtrado'] if st.session_state['df_resultado_filtrado'] is not None else st.session_state['df_resultado']
-                
-                df_para_exportar.to_excel(output, index=False, sheet_name="Comparacion", engine='openpyxl')
-                output.seek(0)
-                
-                # Generar nombre de archivo con información del rango seleccionado
-                nombre_archivo = f"comparacion_cu_{st.session_state['parametros_comparacion']['mercado']}_{st.session_state['parametros_comparacion']['comercializador']}_{st.session_state['parametros_comparacion']['nt']}_{st.session_state['slider_periodo_inicio']}_{st.session_state['slider_periodo_fin']}.xlsx"
-                
-                st.download_button(
-                    label="📥 Descargar Resultados",
-                    data=output.getvalue(),
-                    file_name=nombre_archivo,
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    key='descargar_btn',
-                    help=f"Descarga los resultados del análisis para el periodo {st.session_state['slider_periodo_inicio']} a {st.session_state['slider_periodo_fin']}"
-                )
+                for com in st.session_state['parametros_comparacion']['comercializadores']:
+                    if com in st.session_state['resultados_comparacion']:
+                        df_com = st.session_state['resultados_comparacion'][com]
+                        
+                        # Filtrar datos para el periodo seleccionado
+                        df_filtrado_com = filtrar_resultados_por_periodo(
+                            df_com,
+                            st.session_state['slider_periodo_inicio'],
+                            st.session_state['slider_periodo_fin']
+                        )
+                        
+                        # Crear archivo Excel
+                        output = io.BytesIO()
+                        df_filtrado_com.to_excel(output, index=False, sheet_name="Comparacion", engine='openpyxl')
+                        output.seek(0)
+                        
+                        # Generar nombre de archivo
+                        nombre_archivo = f"comparacion_cu_{st.session_state['parametros_comparacion']['mercado']}_{com}_{st.session_state['parametros_comparacion']['nt']}_{st.session_state['slider_periodo_inicio']}_{st.session_state['slider_periodo_fin']}.xlsx"
+                        
+                        st.download_button(
+                            label=f"📥 Descargar {com}",
+                            data=output.getvalue(),
+                            file_name=nombre_archivo,
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            key=f'descargar_btn_{com}',
+                            help=f"Descarga los resultados de la comparación con {com} para el periodo {st.session_state['slider_periodo_inicio']} a {st.session_state['slider_periodo_fin']}"
+                        )
             
             with col2:
                 if st.button('🔄 Nueva Comparación', key='nueva_comparacion'):
@@ -497,9 +653,36 @@ if st.session_state['archivo_cargado']:
             ```
             """)
             
-            # Input para consumo promedio del cliente
-            col1, col2, col3 = st.columns([2, 2, 1])
+            # Selector de comercializador y inputs para análisis de ahorro
+            col1, col2, col3, col4 = st.columns(4)
+            
             with col1:
+                # Selector de comercializador para el análisis de ahorro
+                comercializadores_disponibles = st.session_state['parametros_comparacion']['comercializadores']
+                
+                # Determinar el índice por defecto
+                if st.session_state.get('comercializador_ahorro') in comercializadores_disponibles:
+                    default_index = comercializadores_disponibles.index(st.session_state['comercializador_ahorro'])
+                else:
+                    default_index = 0
+                
+                comercializador_ahorro = st.selectbox(
+                    'Comercializador:',
+                    options=comercializadores_disponibles,
+                    key='selector_comercializador_ahorro',
+                    index=default_index,
+                    help="Seleccione el comercializador para calcular el análisis de ahorro"
+                )
+                # Guardar el comercializador seleccionado
+                comercializador_anterior = st.session_state.get('comercializador_ahorro')
+                st.session_state['comercializador_ahorro'] = comercializador_ahorro
+                
+                # Si cambió el comercializador, limpiar resultados previos
+                if comercializador_anterior and comercializador_anterior != comercializador_ahorro:
+                    st.session_state['mostrar_analisis_ahorro'] = False
+                    st.session_state['resultados_ahorro'] = None
+            
+            with col2:
                 consumo_promedio = st.number_input(
                     'Consumo promedio mensual del cliente (kWh):',
                     min_value=1.0,
@@ -510,27 +693,33 @@ if st.session_state['archivo_cargado']:
                 )
                 st.session_state['consumo_promedio_kwh'] = consumo_promedio
             
-            with col2:
+            with col3:
                 st.markdown("")
                 st.markdown("")
                 if st.button('💰 Calcular Ahorro', type='primary', key='calcular_ahorro_btn'):
-                    with st.spinner('Calculando análisis de ahorro...'):
-                        resultados_ahorro = calcular_ahorro_energia(
-                            st.session_state['df_resultado'],
-                            st.session_state['slider_periodo_inicio'],
-                            st.session_state['slider_periodo_fin'],
-                            consumo_promedio
-                        )
+                    # Obtener el DataFrame del comercializador seleccionado
+                    if comercializador_ahorro in st.session_state['resultados_comparacion']:
+                        df_resultado_ahorro = st.session_state['resultados_comparacion'][comercializador_ahorro]
                         
-                        if resultados_ahorro:
-                            st.session_state['resultados_ahorro'] = resultados_ahorro
-                            st.session_state['mostrar_analisis_ahorro'] = True
-                            st.success("✅ Análisis de ahorro calculado exitosamente")
-                            st.rerun()
-                        else:
-                            st.error("❌ No se pudo calcular el análisis de ahorro. Verifique los datos.")
+                        with st.spinner('Calculando análisis de ahorro...'):
+                            resultados_ahorro = calcular_ahorro_energia(
+                                df_resultado_ahorro,
+                                st.session_state['slider_periodo_inicio'],
+                                st.session_state['slider_periodo_fin'],
+                                consumo_promedio
+                            )
+                            
+                            if resultados_ahorro:
+                                st.session_state['resultados_ahorro'] = resultados_ahorro
+                                st.session_state['mostrar_analisis_ahorro'] = True
+                                st.success("✅ Análisis de ahorro calculado exitosamente")
+                                st.rerun()
+                            else:
+                                st.error("❌ No se pudo calcular el análisis de ahorro. Verifique los datos.")
+                    else:
+                        st.error(f"❌ No hay datos disponibles para {comercializador_ahorro}")
             
-            with col3:
+            with col4:
                 st.markdown("")
                 st.markdown("")
                 if st.button('🔄 Reiniciar Análisis', key='reiniciar_ahorro_btn'):
@@ -548,6 +737,6 @@ else:
 # Pie de página
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: left;'>Desarrollado por: <a href='https://www.andresbadillo.co/' target='_blank'>andresbadillo.co</a></div>",
+    "<div style='text-align: left;'>Desarrollado por: <a href='https://github.com/andresbadillo' target='_blank'>andresbadillo.co</a></div>",
     unsafe_allow_html=True
 ) 

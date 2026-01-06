@@ -122,11 +122,13 @@ def mostrar_analisis_ahorro(resultados: Dict) -> None:
                 help="Ahorro total en el periodo seleccionado (RUITOQUE más económico)"
             )
         else:
+            # Cuando no hay ahorro, el porcentaje es negativo y debe mostrarse en rojo
+            # Usamos "normal" porque muestra rojo para valores negativos
             st.metric(
                 "Costo Adicional", 
                 f"${abs(resultados['ahorro_absoluto']):,.2f}",
-                delta=f"{resultados['ahorro_porcentual']:.2f}%",
-                delta_color="inverse",
+                delta=f"{resultados['ahorro_porcentual']:+.2f}%",  # El signo negativo ya está en el valor
+                delta_color="normal",
                 help="Costo adicional en el periodo seleccionado (RUITOQUE menos económico)"
             )
     

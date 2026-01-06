@@ -2,7 +2,7 @@
 
 # Configuración de la página
 PAGE_CONFIG = {
-    "page_title": "Análisis de Tarifas - Ruitoque v2.4.0",
+    "page_title": "Análisis de Tarifas - Ruitoque Energía",
     "page_icon": "assets/Isotipo.png",
     "layout": "wide",
     "initial_sidebar_state": "expanded",
@@ -15,15 +15,19 @@ INITIAL_SESSION_STATE = {
     'df_tarifas': None,
     'mostrar_resultados': False,
     'df_resultado': None,
+    'resultados_comparacion': {},  # Diccionario con resultados por comercializador
+    'comercializador_activo': None,  # Comercializador actualmente visualizado
     'parametros_comparacion': {},
-    'mensajes_analisis': [],
+    'mensajes_analisis': {},
     'slider_periodo_inicio': None,
     'slider_periodo_fin': None,
     'df_resultado_filtrado': None,
     'error_carga': False,
     'mostrar_analisis_ahorro': False,
     'resultados_ahorro': None,
-    'consumo_promedio_kwh': None
+    'consumo_promedio_kwh': None,
+    'comercializador_ahorro': None,
+    'comercializador_ahorro_anterior': None
 }
 
 # Columnas necesarias para el análisis
