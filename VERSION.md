@@ -255,5 +255,77 @@
 
 ---
 
+## v3.1.0 (Enero 2026)
+
+### ✨ Nueva Funcionalidad: Comparación Múltiple de Comercializadores
+- **Múltiples Comercializadores**: Ahora se pueden comparar hasta 3 comercializadores simultáneamente (1 obligatorio + 2 opcionales)
+- **Selectores Opcionales**: Nuevos selectores para "Comercializador 2 (Opcional)" y "Comercializador 3 (Opcional)"
+- **Validación Inteligente**: Los selectores opcionales excluyen automáticamente los comercializadores ya seleccionados
+- **Fechas Disponibles**: La selección de periodos se basa en el comercializador principal, asegurando compatibilidad
+
+### 🔀 Selector de Comercializador Activo
+- **Visualización Dinámica**: Selector para cambiar entre comercializadores y ver el análisis periodo a periodo de cada uno
+- **Resultados Detallados por Comercializador**: Cada comercializador muestra su propio análisis y resultados detallados
+- **Ajuste de Rango Unificado**: El slider de periodos funciona igual para todos los comercializadores seleccionados
+
+### 📊 Promedios del Periodo Seleccionado Mejorados
+- **Múltiples Filas de Promedios**: Muestra una fila de promedios por cada comercializador seleccionado (1 a 3 filas)
+- **Métricas Completas**: Cada fila incluye Promedio RUITOQUE, Promedio del Comercializador, Diferencia Absoluta y Periodos Analizados
+- **Colores Correctos**: Los porcentajes negativos (cuando RUITOQUE es más caro) se muestran en rojo correctamente
+
+### 📈 Gráfico de Comparación Múltiple
+- **Visualización Unificada**: Nuevo gráfico que muestra RUITOQUE y todos los comercializadores seleccionados en la misma gráfica
+- **Colores Distintivos**: Cada comercializador tiene un color único para fácil identificación
+- **Leyenda Completa**: Leyenda clara que identifica cada línea del gráfico
+- **Análisis Comparativo**: Permite comparar visualmente el comportamiento de múltiples comercializadores simultáneamente
+
+### 📥 Descarga de Resultados Mejorada
+- **Archivos Separados**: Genera un archivo Excel por cada comercializador seleccionado
+- **Nombres Descriptivos**: Cada archivo incluye el nombre del comercializador en el nombre del archivo
+- **Datos Filtrados**: Cada archivo contiene solo los datos del periodo seleccionado en el slider
+- **Botones Organizados**: Todos los botones de descarga agrupados en una sección clara
+
+### 💰 Análisis de Ahorro Mejorado
+- **Selector de Comercializador**: Nuevo selector al inicio de la sección para elegir el comercializador a analizar
+- **Layout Mejorado**: Todos los elementos (selector, input, botones) en 4 columnas del mismo ancho
+- **Análisis por Comercializador**: El análisis se calcula específicamente para el comercializador seleccionado
+- **Reinicio Inteligente**: Al reiniciar, se puede cambiar de comercializador sin perder la selección
+
+### 🔧 Mejoras Técnicas en Comparación
+- **Manejo de Duplicados**: Agrupación automática por FECHA para promediar valores cuando hay múltiples registros
+- **Mensajes Informativos**: Información sobre periodos que solo están en un comercializador (no se incluyen)
+- **Validación Mejorada**: Verificación de datos disponibles antes de ejecutar comparaciones
+- **Estado de Sesión Expandido**: Nuevas variables para manejar múltiples resultados y comercializadores activos
+
+### 🎨 Correcciones de Visualización
+- **Colores de Porcentajes**: Corregida la lógica de colores para mostrar rojo cuando RUITOQUE es más caro (porcentaje negativo)
+- **Consistencia Visual**: Todos los porcentajes negativos se muestran en rojo en toda la aplicación
+- **Indicadores Claros**: Diferenciación visual clara entre ahorro (verde) y costo adicional (rojo)
+
+### 🐛 Correcciones de Bugs
+- **Selección de Periodos**: Corregido el cálculo de fechas disponibles para basarse solo en el comercializador principal
+- **Periodos Omitidos**: Solucionado problema de periodos que se saltaban en el análisis por duplicados
+- **Manejo de Errores**: Mejorado el manejo cuando comercializadores opcionales no tienen datos en el rango seleccionado
+
+### 📋 Arquitectura Mejorada
+- **Nuevas Funciones**: `crear_grafico_comparacion_multiple()` para gráficos con múltiples comercializadores
+- **Estado de Sesión**: Estructura mejorada para manejar `resultados_comparacion` como diccionario
+- **Mensajes de Análisis**: Almacenamiento de mensajes por comercializador para mejor organización
+- **Código Modular**: Mejoras en la organización del código para soportar múltiples comparaciones
+
+### 🎯 Beneficios para Ejecutivos de Ventas
+- **Comparación Simultánea**: Pueden comparar RUITOQUE con múltiples competidores al mismo tiempo
+- **Análisis Completo**: Visualización clara de cómo RUITOQUE se compara con varios comercializadores
+- **Presentaciones Eficientes**: Un solo análisis muestra múltiples comparaciones
+- **Análisis de Ahorro Flexible**: Pueden calcular el ahorro para diferentes comercializadores sin reiniciar todo
+
+### 🚀 Experiencia de Usuario Mejorada
+- **Interfaz Más Completa**: Opción de agregar comercializadores adicionales sin complicar el flujo principal
+- **Navegación Intuitiva**: Selector claro para cambiar entre visualizaciones de diferentes comercializadores
+- **Información Contextual**: Mensajes claros sobre qué periodos se están analizando y por qué
+- **Flexibilidad**: Pueden agregar o quitar comercializadores opcionales según necesidad
+
+---
+
 **Desarrollado por**: [andresbadillo.co](https://www.andresbadillo.co/)  
 **Mantenido por**: Equipo de Desarrollo Ruitoque Energía 

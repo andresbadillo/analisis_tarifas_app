@@ -146,5 +146,5 @@ Si encuentras problemas al usar la aplicación, consulta la [Guía de Solución 
 
 ---
 
-**Versión**: 2.4.0  
-**Última actualización**: 2025 
+**Versión**: 3.1.0  
+**Última actualización**: 2026
